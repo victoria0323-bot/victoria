@@ -9,7 +9,9 @@
 data 인자를 생략하면 data/sample.json 을 사용한다.
 """
 import argparse
+import base64
 import json
+import mimetypes
 import sys
 from pathlib import Path
 
@@ -18,9 +20,32 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).parent
 CHROMIUM_PATH = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
+DEFAULT_CHARACTER_IMAGE = "assets/character-woman-cat.png"
+
+
+def resolve_image(path: str) -> str:
+    """로컬 상대경로를 base64 data URI로 변환한다 (헤드리스 크롬의 file:// 접근 제한 회피)."""
+    if not path:
+        return ""
+    if path.startswith(("http://", "https://", "data:")):
+        return path
+    p = Path(path)
+    if not p.is_absolute():
+        p = ROOT / p
+    if not p.exists():
+        return path
+    mime = mimetypes.guess_type(p.name)[0] or "image/png"
+    encoded = base64.b64encode(p.read_bytes()).decode("ascii")
+    return f"data:{mime};base64,{encoded}"
 
 
 def render_html(data: dict) -> str:
+    data = dict(data)
+    if "headline" in data:
+        data["headline"] = dict(data["headline"])
+        data["headline"]["image"] = resolve_image(data["headline"].get("image", ""))
+    data["character_image"] = resolve_image(data.get("character_image", DEFAULT_CHARACTER_IMAGE))
+
     env = Environment(loader=FileSystemLoader(str(ROOT)))
     template = env.get_template("template.html.j2")
     return template.render(**data)

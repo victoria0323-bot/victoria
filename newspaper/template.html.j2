@@ -310,17 +310,22 @@
     padding:18px 22px;
   }
   .tip-head{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:800;margin-bottom:14px;color:var(--navy);}
-  .tip-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+  .tip-steps{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;}
   .tip-step{
-    background:#fff;border-radius:12px;padding:10px 12px;
+    background:#fff;border-radius:12px;padding:8px 6px;
     display:flex;flex-direction:column;align-items:center;gap:4px;
-    flex:1;min-width:70px;
+    flex:1;min-width:0;
     border:1px solid #dbe6fb;
   }
   .tip-step .ts-icon{font-size:18px;}
   .tip-step .ts-label{font-size:11.5px;font-weight:800;color:var(--navy);}
   .tip-step .ts-sub{font-size:10px;color:var(--sub);}
   .tip-arrow{font-size:16px;color:#b7c6ea;font-weight:800;}
+
+  .tip-row{display:flex;align-items:flex-end;gap:8px;}
+  .tip-row .tip-card{flex:1;min-width:0;}
+  .character-box{flex:none;width:128px;display:flex;justify-content:center;}
+  .character-box img{width:100%;height:auto;display:block;}
 
   /* footer */
   .footer-bar{
@@ -472,18 +477,25 @@
         {% endfor %}
       </div>
 
-      <div class="tip-card">
-        <div class="tip-head">💡 신문 읽는 TIP</div>
-        <div class="tip-steps">
-          {% for step in tip_steps %}
-          <div class="tip-step">
-            <div class="ts-icon">{{ step.icon }}</div>
-            <div class="ts-label">{{ step.label }}</div>
-            <div class="ts-sub">{{ step.sub }}</div>
+      <div class="tip-row">
+        <div class="tip-card">
+          <div class="tip-head">💡 신문 읽는 TIP</div>
+          <div class="tip-steps">
+            {% for step in tip_steps %}
+            <div class="tip-step">
+              <div class="ts-icon">{{ step.icon }}</div>
+              <div class="ts-label">{{ step.label }}</div>
+              <div class="ts-sub">{{ step.sub }}</div>
+            </div>
+            {% if not loop.last %}<div class="tip-arrow">→</div>{% endif %}
+            {% endfor %}
           </div>
-          {% if not loop.last %}<div class="tip-arrow">→</div>{% endif %}
-          {% endfor %}
         </div>
+        {% if character_image %}
+        <div class="character-box">
+          <img src="{{ character_image }}" alt="character">
+        </div>
+        {% endif %}
       </div>
 
     </div>

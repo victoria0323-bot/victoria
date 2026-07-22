@@ -39,9 +39,16 @@
 
 `direction` 은 `"up"` 또는 `"down"` 이며 각각 빨강 ▲ / 파랑 ▼ 로 표시됩니다.
 
+## 캐릭터 / 사진 이미지
+
+- `assets/character-woman-cat.png` — TIP 박스 옆에 항상 고정으로 나오는 캐릭터(투명 배경 PNG). 바꾸고 싶으면 이 파일을 교체하면 된다.
+- `headline.image` 필드에 로컬 파일 경로(예: `assets/2026-07-22-headline.jpg`)나 URL을 넣으면 헤드라인 기사 옆 사진 자리에 들어간다. 비워두면 회색 플레이스홀더가 나온다.
+- 로컬 이미지 파일은 `render.py`가 자동으로 base64로 인코딩해 넣어주므로 별도 처리가 필요 없다.
+
 ## 파일 구성
 
 - `template.html.j2` — Jinja2 HTML/CSS 템플릿 (디자인 전체)
 - `render.py` — JSON 데이터를 템플릿에 채운 뒤 헤드리스 크롬으로 PNG 스크린샷 생성
 - `data/sample.json` — 예시 데이터 (첨부 이미지 내용 기반)
+- `assets/` — 고정 캐릭터 이미지 등 재사용 이미지 자산
 - `output/` — 생성된 PNG 저장 위치
