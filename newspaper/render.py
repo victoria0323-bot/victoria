@@ -41,9 +41,17 @@ def resolve_image(path: str) -> str:
 
 def render_html(data: dict) -> str:
     data = dict(data)
-    if "headline" in data:
-        data["headline"] = dict(data["headline"])
-        data["headline"]["image"] = resolve_image(data["headline"].get("image", ""))
+
+    for key in ("headline", "core_news", "ad"):
+        if key in data:
+            data[key] = dict(data[key])
+            data[key]["image"] = resolve_image(data[key].get("image", ""))
+
+    if "sub_articles" in data:
+        data["sub_articles"] = [dict(s, image=resolve_image(s.get("image", ""))) for s in data["sub_articles"]]
+
+    data["must_read_image"] = resolve_image(data.get("must_read_image", ""))
+    data["summary_image"] = resolve_image(data.get("summary_image", ""))
     data["character_image"] = resolve_image(data.get("character_image", DEFAULT_CHARACTER_IMAGE))
 
     env = Environment(loader=FileSystemLoader(str(ROOT)))

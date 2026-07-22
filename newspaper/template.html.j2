@@ -133,6 +133,7 @@
 
   /* ---------- generic card ---------- */
   .card{
+    position:relative;
     background:#fff;
     border-radius:var(--card-radius);
     border:2px solid var(--line);
@@ -158,6 +159,7 @@
     flex:1;
   }
   .card-head .icon{font-size:20px;}
+  .card-head .head-icon-img{width:30px;height:30px;object-fit:contain;flex:none;}
 
   .card.accent-blue{border-color:#cfe0ff;}
   .card.accent-green{border-color:#c7ecdb;}
@@ -183,6 +185,7 @@
     color:var(--ink);
   }
   .bullet-list li .chk{flex:none;font-size:15px;margin-top:1px;}
+  .core-illustration{width:108px;margin:10px auto 0;display:block;}
 
   /* card 2: 주요지표 */
   .stat-time{font-size:13px;color:var(--sub);font-weight:600;margin-left:auto;}
@@ -208,6 +211,7 @@
 
   /* card 4: 한줄요약 */
   .summary-text{font-size:15.5px;line-height:1.6;color:var(--ink);}
+  .summary-illustration{width:64px;display:block;margin:10px 0 0 auto;}
 
   /* ---------- right column ---------- */
   .row-flex{display:flex;gap:16px;}
@@ -230,7 +234,9 @@
     display:flex;align-items:center;justify-content:center;
     font-size:34px;
     border:2px dashed #b9cdfa;
+    overflow:hidden;
   }
+  .ad-visual img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
   .ad-title{font-size:18px;font-weight:800;}
   .ad-meta{font-size:13.5px;color:var(--sub);}
 
@@ -301,6 +307,8 @@
     display:flex;align-items:center;justify-content:center;
     font-size:22px;
   }
+  .sub-image{width:100%;height:110px;border-radius:12px;overflow:hidden;}
+  .sub-image img{width:100%;height:100%;object-fit:cover;display:block;}
 
   /* tip box */
   .tip-card{
@@ -377,6 +385,9 @@
           <li><span class="chk">✅</span><span>{{ b }}</span></li>
           {% endfor %}
         </ul>
+        {% if core_news.image %}
+        <img class="core-illustration" src="{{ core_news.image }}" alt="">
+        {% endif %}
       </div>
 
       <div class="card accent-green">
@@ -403,7 +414,11 @@
         <div class="card-head">
           <div class="num-badge orange">3</div>
           <div class="card-title">오늘 꼭 봐야 할 기사</div>
+          {% if must_read_image %}
+          <img class="head-icon-img" src="{{ must_read_image }}" alt="">
+          {% else %}
           <div class="icon">📄</div>
+          {% endif %}
         </div>
         <ul class="article-list">
           {% for a in must_read %}
@@ -422,6 +437,9 @@
           <div class="icon">💡</div>
         </div>
         <div class="summary-text">{{ summary }}</div>
+        {% if summary_image %}
+        <img class="summary-illustration" src="{{ summary_image }}" alt="">
+        {% endif %}
       </div>
 
     </div>
@@ -431,7 +449,7 @@
       <div class="row-flex">
         <div class="ad-card">
           <div class="ad-brand">{{ ad.brand }}</div>
-          <div class="ad-visual">{{ ad.icon }}</div>
+          <div class="ad-visual">{% if ad.image %}<img src="{{ ad.image }}" alt="">{% else %}{{ ad.icon }}{% endif %}</div>
           <div class="ad-title">{{ ad.title }}</div>
           <div class="ad-meta">{{ ad.datetime }}<br>{{ ad.note }}</div>
         </div>
@@ -469,7 +487,11 @@
       <div class="row-flex">
         {% for s in sub_articles %}
         <div class="sub-card">
+          {% if s.image %}
+          <div class="sub-image"><img src="{{ s.image }}" alt=""></div>
+          {% else %}
           <div class="sub-icon" style="background:{{ s.color_bg }};">{{ s.icon }}</div>
+          {% endif %}
           <div class="sub-title">{{ s.title }}</div>
           <div class="sub-body">{{ s.body }}</div>
         </div>
