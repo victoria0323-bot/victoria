@@ -167,6 +167,13 @@
   .card.accent-green{border-color:#c7ecdb;}
   .card.accent-orange{border-color:#ffdcb8;}
   .card.accent-red{border-color:#f7c9cd;}
+  .summary-card{
+    background:#fff;
+    border:2px solid #f7c9cd;
+    border-radius:var(--card-radius);
+    padding:18px 20px;
+    position:relative;
+  }
   .num-badge.blue{background:var(--blue);}
   .num-badge.green{background:var(--green);}
   .num-badge.orange{background:var(--orange);}
@@ -278,6 +285,18 @@
   .badge-row .b1{background:var(--blue-light);color:var(--blue);}
   .badge-row .b2{background:var(--yellow);color:var(--navy);}
 
+  /* top photo (moved above the headline, below Market Index) */
+  .top-photo{
+    width:100%;
+    height:230px;
+    border-radius:var(--card-radius);
+    overflow:hidden;
+    background-size:cover;
+    background-position:center;
+    background-color:#dfe4ee;
+    border:2px solid var(--line);
+  }
+
   /* headline article */
   .headline-card{
     background:#fff;
@@ -287,20 +306,40 @@
     display:flex;
     gap:22px;
   }
-  .headline-card .h-text{flex:1.2;min-width:0;}
-  .headline-card .h-image{
-    flex:1;
-    border-radius:14px;
-    overflow:hidden;
-    min-height:200px;
-    background-size:cover;
-    background-position:center;
-    background-color:#dfe4ee;
-  }
+  .headline-card .h-text{flex:1.3;min-width:0;}
   .h-kicker{font-size:14px;color:var(--sub);font-weight:700;margin-bottom:4px;}
   .h-title{font-size:28px;font-weight:800;line-height:1.3;margin:0 0 14px;}
   .h-sub{font-size:16px;font-weight:700;color:#333c4d;line-height:1.5;margin-bottom:12px;white-space:pre-line;}
   .h-body{font-size:14.5px;color:var(--sub);line-height:1.7;}
+
+  /* "오늘의 이슈" callout replacing the old inline photo */
+  .issue-box{
+    flex:1;
+    min-width:0;
+    background:#f7f9ff;
+    border:1px solid #dde6fb;
+    border-radius:14px;
+    padding:16px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .issue-box .ib-title{font-size:14px;font-weight:800;color:var(--navy);display:flex;align-items:center;gap:6px;}
+  .issue-box ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:9px;}
+  .issue-box li{font-size:12.5px;color:var(--ink);line-height:1.4;font-weight:700;}
+
+  /* compact bottom row: TIP list + summary, character overlapping */
+  .bottom-row{display:flex;gap:16px;position:relative;padding-bottom:170px;}
+  .bottom-row > .tip-card,
+  .bottom-row > .summary-card{flex:1;min-width:0;margin:0;}
+  .tip-steps-compact{display:flex;flex-direction:column;gap:10px;}
+  .tip-step-compact{display:flex;align-items:center;gap:10px;}
+  .tip-step-compact .tsc-icon{
+    width:30px;height:30px;border-radius:9px;background:#fff;border:1px solid #dbe6fb;
+    display:flex;align-items:center;justify-content:center;font-size:15px;flex:none;
+  }
+  .tip-step-compact .tsc-label{font-size:13px;font-weight:800;color:var(--navy);}
+  .tip-step-compact .tsc-sub{font-size:11px;color:var(--sub);}
 
   /* sub articles */
   .sub-card{
@@ -342,7 +381,6 @@
   .tip-step .ts-sub{font-size:10px;color:var(--sub);}
   .tip-arrow{font-size:16px;color:#b7c6ea;font-weight:800;}
 
-  .tip-wrap{position:relative;padding-bottom:170px;}
   .character-box{position:absolute;right:-8px;bottom:0;width:260px;z-index:2;}
   .character-box img{width:100%;height:auto;display:block;}
 
@@ -442,48 +480,38 @@
         </ul>
       </div>
 
-      <div class="card accent-red">
-        <div class="card-head">
-          <div class="num-badge red">4</div>
-          <div class="card-title">한 줄 요약</div>
-          <div class="icon">💡</div>
-        </div>
-        <div class="summary-text">{{ summary }}</div>
-        {% if summary_image %}
-        <img class="summary-illustration" src="{{ summary_image }}" alt="">
-        {% endif %}
-      </div>
-
     </div>
 
     <div class="col-right">
 
-      <div class="row-flex">
-        <div class="index-card">
-          <div class="index-head">
-            <div class="idx-title">Market Index</div>
-            <div class="idx-meta">{{ market_index.date_label }} · {{ market_index.edition }}</div>
-          </div>
-          <div class="index-list">
-            {% for row in market_index.rows %}
-            <div class="index-row">
-              <div class="ir-label">{{ row.label }}</div>
-              <div class="ir-right">
-                <div class="ir-value">{{ row.value }}</div>
-                {% if row.change %}
-                <div class="index-badge {{ row.direction }}">{{ '▲' if row.direction == 'up' else '▼' }}</div>
-                <div class="ir-change {{ row.direction }}">{{ row.change }}</div>
-                {% endif %}
-              </div>
+      <div class="index-card">
+        <div class="index-head">
+          <div class="idx-title">Market Index</div>
+          <div class="idx-meta">{{ market_index.date_label }} · {{ market_index.edition }}</div>
+        </div>
+        <div class="index-list">
+          {% for row in market_index.rows %}
+          <div class="index-row">
+            <div class="ir-label">{{ row.label }}</div>
+            <div class="ir-right">
+              <div class="ir-value">{{ row.value }}</div>
+              {% if row.change %}
+              <div class="index-badge {{ row.direction }}">{{ '▲' if row.direction == 'up' else '▼' }}</div>
+              <div class="ir-change {{ row.direction }}">{{ row.change }}</div>
+              {% endif %}
             </div>
-            {% endfor %}
           </div>
-          <div class="badge-row">
-            <div class="b1">{{ market_index.badge1 }}</div>
-            <div class="b2">{{ market_index.badge2 }}</div>
-          </div>
+          {% endfor %}
+        </div>
+        <div class="badge-row">
+          <div class="b1">{{ market_index.badge1 }}</div>
+          <div class="b2">{{ market_index.badge2 }}</div>
         </div>
       </div>
+
+      {% if headline.image %}
+      <div class="top-photo" style="background-image:url('{{ headline.image }}');"></div>
+      {% endif %}
 
       <div class="headline-card">
         <div class="h-text">
@@ -491,7 +519,14 @@
           <div class="h-sub">{{ headline.subtitle }}</div>
           <div class="h-body">{{ headline.body }}</div>
         </div>
-        <div class="h-image" style="{% if headline.image %}background-image:url('{{ headline.image }}');{% endif %}"></div>
+        <div class="issue-box">
+          <div class="ib-title">📌 오늘의 이슈</div>
+          <ol>
+            {% for a in must_read %}
+            <li>{{ a.title }}</li>
+            {% endfor %}
+          </ol>
+        </div>
       </div>
 
       <div class="row-flex">
@@ -508,20 +543,34 @@
         {% endfor %}
       </div>
 
-      <div class="tip-wrap">
+      <div class="bottom-row">
         <div class="tip-card">
           <div class="tip-head">💡 신문 읽는 TIP</div>
-          <div class="tip-steps">
+          <div class="tip-steps-compact">
             {% for step in tip_steps %}
-            <div class="tip-step">
-              <div class="ts-icon">{{ step.icon }}</div>
-              <div class="ts-label">{{ step.label }}</div>
-              <div class="ts-sub">{{ step.sub }}</div>
+            <div class="tip-step-compact">
+              <div class="tsc-icon">{{ step.icon }}</div>
+              <div>
+                <div class="tsc-label">{{ step.label }}</div>
+                <div class="tsc-sub">{{ step.sub }}</div>
+              </div>
             </div>
-            {% if not loop.last %}<div class="tip-arrow">→</div>{% endif %}
             {% endfor %}
           </div>
         </div>
+
+        <div class="summary-card">
+          <div class="card-head">
+            <div class="num-badge red">4</div>
+            <div class="card-title">한 줄 요약</div>
+            <div class="icon">💡</div>
+          </div>
+          <div class="summary-text">{{ summary }}</div>
+          {% if summary_image %}
+          <img class="summary-illustration" src="{{ summary_image }}" alt="">
+          {% endif %}
+        </div>
+
         {% if character_image %}
         <div class="character-box">
           <img src="{{ character_image }}" alt="character">
