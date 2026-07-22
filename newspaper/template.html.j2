@@ -47,22 +47,23 @@
     border-radius:20px;
     display:flex;
     align-items:center;
-    gap:14px;
-    padding:18px 26px;
+    gap:16px;
+    padding:26px 30px;
   }
   .title-badge .news-pill{
     background:#fff;
     color:var(--navy);
     font-weight:800;
-    font-size:20px;
-    padding:8px 14px;
+    font-size:24px;
+    padding:10px 16px;
     border-radius:10px;
     letter-spacing:1px;
   }
   .title-badge .title-text{
     color:#fff;
-    font-size:28px;
+    font-size:38px;
     font-weight:800;
+    line-height:1.15;
   }
   .title-badge .title-text .hi{
     color:var(--yellow);
@@ -75,7 +76,7 @@
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:8px;
+    gap:10px;
     padding:10px;
     border:2px solid var(--navy);
   }
@@ -83,15 +84,15 @@
     display:flex;
     align-items:center;
     gap:8px;
-    font-size:22px;
+    font-size:26px;
     font-weight:800;
   }
   .date-box .day-pill{
     background:var(--navy);
     color:#fff;
     font-weight:800;
-    font-size:15px;
-    padding:4px 14px;
+    font-size:17px;
+    padding:5px 16px;
     border-radius:999px;
   }
 
@@ -100,16 +101,17 @@
     align-items:center;
     justify-content:space-between;
     border-bottom:3px solid var(--yellow);
-    padding-bottom:10px;
+    padding-bottom:12px;
     margin-bottom:20px;
   }
   .hook-row .hook-text{
-    font-size:23px;
+    font-size:32px;
     font-weight:800;
   }
   .hook-row .hook-text .hi{
     background:linear-gradient(transparent 60%, var(--yellow) 60%);
   }
+  .hook-row .hook-icon{font-size:30px;}
 
   /* ---------- layout ---------- */
   .layout{
@@ -339,14 +341,14 @@
     margin-top:20px;
     background:var(--navy);
     border-radius:16px;
-    padding:16px 22px;
+    padding:22px 22px;
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:14px;
+    gap:16px;
     color:#fff;
-    font-size:15px;
-    font-weight:700;
+    font-size:22px;
+    font-weight:800;
   }
   .footer-bar .sep{opacity:.5;}
 </style>
@@ -367,7 +369,7 @@
 
   <div class="hook-row">
     <div class="hook-text"><span class="hi">{{ hook_text }}</span></div>
-    <div style="font-size:22px;">🔍</div>
+    <div class="hook-icon">🔍</div>
   </div>
 
   <div class="layout">
@@ -447,13 +449,6 @@
     <div class="col-right">
 
       <div class="row-flex">
-        <div class="ad-card">
-          <div class="ad-brand">{{ ad.brand }}</div>
-          <div class="ad-visual">{% if ad.image %}<img src="{{ ad.image }}" alt="">{% else %}{{ ad.icon }}{% endif %}</div>
-          <div class="ad-title">{{ ad.title }}</div>
-          <div class="ad-meta">{{ ad.datetime }}<br>{{ ad.note }}</div>
-        </div>
-
         <div class="index-card">
           <div class="index-head">
             <div class="idx-title">Market Index</div>
