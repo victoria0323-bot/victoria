@@ -20,7 +20,8 @@
     {"icon": "📈", "label": "코스닥", "value": "751.09", "change": "2.25 (-0.30%)", "direction": "down"},
     {"icon": "💲", "label": "원/달러 환율", "value": "1,480.10", "change": "6.70", "direction": "up"},
     {"icon": "🏦", "label": "회사채금리(AA-,연%)", "value": "4.604", "change": "0.033", "direction": "up"},
-    {"icon": "🏦", "label": "국고채금리(3년물,연%)", "value": "3.913", "change": "0.046", "direction": "up"}
+    {"icon": "🏦", "label": "국고채금리(3년물,연%)", "value": "3.913", "change": "0.046", "direction": "up"},
+    {"icon": "🛢️", "label": "WTI 원유(달러)", "value": "68.11", "change": "0.35 (+0.51%)", "direction": "up"}
   ],
 
   "must_read": [

@@ -121,7 +121,8 @@
   }
   .row-a{display:flex;gap:16px;align-items:stretch;}
   .row-a > .card{flex:1.15;min-width:0;}
-  .row-a > .index-card{flex:0.95;min-width:0;}
+  .row-a > .card.accent-green{flex:0.95;min-width:0;}
+  .row-a > .index-card{flex:1.15;min-width:0;}
   .row-c{display:flex;gap:16px;align-items:stretch;}
   .row-c > .card{flex:1.6;min-width:0;}
   .sub-stack{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
@@ -189,6 +190,23 @@
   .bullet-list li .chk{flex:none;font-size:15px;margin-top:1px;}
   .core-illustration{width:108px;margin:10px auto 0;display:block;}
 
+  /* card 2: 주요지표 */
+  .stat-time{font-size:13px;color:var(--sub);font-weight:600;margin-left:auto;}
+  .stat-list{display:flex;flex-direction:column;gap:14px;}
+  .stat-row{display:flex;align-items:center;gap:10px;}
+  .stat-icon{
+    width:34px;height:34px;border-radius:9px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex:none;
+    background:var(--blue-light);
+  }
+  .stat-info{display:flex;flex-direction:column;gap:2px;flex:1;}
+  .stat-label{font-size:14px;color:var(--sub);font-weight:600;}
+  .stat-value{font-size:19px;font-weight:800;}
+  .stat-change{font-size:13px;font-weight:700;}
+  .stat-change.up{color:var(--red);}
+  .stat-change.down{color:var(--blue);}
+
   /* card: 오늘 꼭 봐야 할 기사 */
   .article-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
   .article-list li .a-title{font-size:15.5px;font-weight:700;display:flex;gap:6px;}
@@ -240,7 +258,7 @@
     padding:9px 2px;border-bottom:1px solid #f0f1f5;
   }
   .index-row:last-child{border-bottom:none;}
-  .index-row .ir-label{font-size:14px;color:var(--sub);font-weight:600;flex:1;min-width:0;}
+  .index-row .ir-label{font-size:13px;color:var(--sub);font-weight:600;flex:1;min-width:0;white-space:nowrap;}
   .index-row .ir-right{display:flex;align-items:center;gap:10px;flex:none;}
   .index-row .ir-value{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
   .index-badge{
@@ -390,6 +408,26 @@
         {% endif %}
       </div>
 
+      <div class="card accent-green">
+        <div class="card-head">
+          <div class="num-badge green">2</div>
+          <div class="card-title">주요 지표</div>
+          <div class="stat-time">({{ indicators_time }} 기준)</div>
+        </div>
+        <div class="stat-list">
+          {% for row in indicators %}
+          <div class="stat-row">
+            <div class="stat-icon">{{ row.icon }}</div>
+            <div class="stat-info">
+              <div class="stat-label">{{ row.label }}</div>
+              <div class="stat-value">{{ row.value }}</div>
+            </div>
+            <div class="stat-change {{ row.direction }}">{% if row.change %}{{ '▲' if row.direction == 'up' else '▼' }} {{ row.change }}{% endif %}</div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
       <div class="index-card">
         <div class="index-head">
           <div class="idx-title">Market Index</div>
@@ -430,7 +468,7 @@
     <div class="row-c">
       <div class="card accent-orange">
         <div class="card-head">
-          <div class="num-badge orange">2</div>
+          <div class="num-badge orange">3</div>
           <div class="card-title">오늘 꼭 봐야 할 기사</div>
           {% if must_read_image %}
           <img class="head-icon-img" src="{{ must_read_image }}" alt="">
@@ -465,7 +503,7 @@
 
     <div class="summary-card">
       <div class="card-head">
-        <div class="num-badge red">3</div>
+        <div class="num-badge red">4</div>
         <div class="card-title">한 줄 요약</div>
         <div class="icon">💡</div>
       </div>
