@@ -389,7 +389,7 @@
               <div class="stat-label">{{ row.label }}</div>
               <div class="stat-value">{{ row.value }}</div>
             </div>
-            <div class="stat-change {{ row.direction }}">{{ '▲' if row.direction == 'up' else '▼' }} {{ row.change }}</div>
+            <div class="stat-change {{ row.direction }}">{% if row.change %}{{ '▲' if row.direction == 'up' else '▼' }} {{ row.change }}{% endif %}</div>
           </div>
           {% endfor %}
         </div>
@@ -442,7 +442,7 @@
             <tr>
               <td class="lbl">{{ row.label }}</td>
               <td class="val">{{ row.value }}</td>
-              <td class="chg {{ row.direction }}">{{ '▲' if row.direction == 'up' else '▼' }} {{ row.change }}</td>
+              <td class="chg {{ row.direction }}">{% if row.change %}{{ '▲' if row.direction == 'up' else '▼' }} {{ row.change }}{% endif %}</td>
             </tr>
             {% endfor %}
           </table>
