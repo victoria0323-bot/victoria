@@ -41,9 +41,20 @@
 
 ## 캐릭터 / 사진 이미지
 
-- `assets/character-woman-cat.png` — TIP 박스 옆에 항상 고정으로 나오는 캐릭터(투명 배경 PNG). 바꾸고 싶으면 이 파일을 교체하면 된다.
-- `headline.image` 필드에 로컬 파일 경로(예: `assets/2026-07-22-headline.jpg`)나 URL을 넣으면 헤드라인 기사 옆 사진 자리에 들어간다. 비워두면 회색 플레이스홀더가 나온다.
-- 로컬 이미지 파일은 `render.py`가 자동으로 base64로 인코딩해 넣어주므로 별도 처리가 필요 없다.
+- `assets/character-woman-cat.png` — TIP 박스 위에 항상 고정으로 나오는 캐릭터(투명 배경 PNG). 바꾸고 싶으면 이 파일을 교체하면 된다.
+- 로컬 이미지 파일은 `render.py`가 자동으로 base64로 인코딩해 넣어주므로 별도 처리가 필요 없다 (headless Chromium이 `file://` 경로를 막기 때문).
+
+아래 필드에 로컬 파일 경로(예: `assets/2026-07-22-headline.jpg`)나 URL을 넣으면 각 카드의 자리에 이미지가 들어간다. 비워두면 이모지/빈 플레이스홀더로 대체된다.
+
+| 필드 | 들어가는 자리 |
+|---|---|
+| `headline.image` | 헤드라인 기사 옆 큰 사진 |
+| `core_news.image` | 카드1 "핵심 뉴스" 리스트 아래 삽화 |
+| `must_read_image` | 카드3 "오늘 꼭 봐야 할 기사" 헤더의 작은 뱃지 |
+| `summary_image` | 카드4 "한 줄 요약" 안의 작은 아이콘 |
+| `ad.image` | 광고 카드 비주얼 |
+| `sub_articles[].image` | 하단 보조기사 2개 각각의 배너 이미지 |
+| `character_image` | 지정 안 하면 `assets/character-woman-cat.png` 사용 |
 
 ## 파일 구성
 
