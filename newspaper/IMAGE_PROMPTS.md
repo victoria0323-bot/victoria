@@ -108,22 +108,71 @@ No text, no numbers, no watermark.
 
 ---
 
+## 2026-08-11 (화) 실제 프롬프트
+
+### ① 헤드라인 — "정책·수급·실적 '3박자' … 불붙은 코스닥"
+
+```
+A photorealistic editorial news photograph inside the customer lounge of a
+Korean securities brokerage. A huge wall-mounted electronic stock board glows
+with rows of rising red figures and upward triangles, casting warm red light
+across the room. In the foreground, seen from behind, a few investors sit in
+lounge chairs looking up at the board, one holding a smartphone showing a
+climbing chart. Warm red board glow mixed with cool ceiling light, muted
+realistic color grading, shallow depth of field on the seated figures,
+documentary photojournalism style, shot on a full-frame DSLR with a 35mm lens.
+Korean setting, contemporary 2026. Horizontal 3:2 composition with the board
+and the seated figures centered in the middle 60% of the frame.
+No visible faces, no watermark, no logo, no readable text or lettering.
+```
+
+### ② 보조기사 1 — "서울 재건축 12곳, 인가 후 3년째 첫삽 못 떴다" (`color_bg: #fff3e8`)
+
+```
+A bold cartoon vector illustration banner, a halted apartment construction
+site with a bare concrete frame and an idle tower crane on the left, and a
+stack of glossy coins with a steep upward cost arrow beside a rolled blueprint
+on the right. Thick dark brown outlines, glossy highlights and soft inner
+shading, chunky rounded shapes, sticker-like rendering. Flat warm orange
+gradient background with a soft vignette, subtle drop shadows under each
+object. Wide 3:1 horizontal banner, objects centered vertically, generous
+empty space between them.
+No text, no letters, no numbers, no watermark.
+```
+
+### ③ 보조기사 2 — "트럭 판매 뚝 … 시동 꺼진 '자영업자의 발'" (`color_bg: #fdecee`)
+
+```
+A bold cartoon vector illustration banner, a chunky small blue cargo truck
+with an empty flatbed parked and switched off on the left, and a glossy
+downward-sloping red bar chart with a descending arrow on the right. Thick
+dark brown outlines, glossy highlights and soft inner shading, chunky rounded
+shapes, sticker-like rendering. Flat muted red-pink gradient background with a
+soft vignette, subtle drop shadows under each object. Wide 3:1 horizontal
+banner, objects centered vertically, generous empty space between them.
+No text, no letters, no numbers, no watermark.
+```
+
+---
+
 ## 저장·연결 방법
 
-1. 생성한 이미지를 `newspaper/assets/` 에 날짜-주제 규칙으로 저장한다.
-   - `2026-08-10-headline.png`, `2026-08-10-greenbelt.png`, `2026-08-10-market.png`
-2. `data/2026-08-10.json` 의 해당 필드에 상대경로를 넣는다.
+1. 생성한 이미지를 `newspaper/assets/` 에 `MMDD-N.png` 규칙으로 저장한다.
+   - 예: `0811-1.png`(헤드라인), `0811-2.png`(보조1), `0811-3.png`(보조2)
+2. **GitHub에 올릴 때는 그날 작업 브랜치를 먼저 선택한다.**
+   업로드는 화면에서 보고 있는 브랜치에 커밋되므로, 브랜치가 다르면 렌더링에 잡히지 않는다.
+3. `data/2026-08-11.json` 의 해당 필드에 상대경로를 넣는다.
 
    ```json
-   "headline":      { "image": "assets/2026-08-10-headline.png" },
-   "sub_articles": [ { "image": "assets/2026-08-10-greenbelt.png" },
-                     { "image": "assets/2026-08-10-market.png" } ]
+   "headline":      { "image": "assets/0811-1.png" },
+   "sub_articles": [ { "image": "assets/0811-2.png" },
+                     { "image": "assets/0811-3.png" } ]
    ```
 
-3. 다시 렌더링한다.
+4. 다시 렌더링한다.
 
    ```bash
-   python3 render.py data/2026-08-10.json --out output/2026-08-10.png
+   python3 render.py data/2026-08-11.json --out output/2026-08-11.png
    ```
 
 `render.py` 가 로컬 파일을 자동으로 base64 data URI로 변환하므로 경로만 넣으면 된다.
