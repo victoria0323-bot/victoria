@@ -2,3 +2,7 @@ __pycache__/
 *.pyc
 newspaper/output/*.png
 !newspaper/output/sample.png
+
+# 개인 데이터 (스레드 내보내기)
+threads-archive/*.json
+threads_and_replies.json

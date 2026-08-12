@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스레드 아카이브</title>
+<style>
+/* ── 색 토큰 ─────────────────────────────────────────────── */
+:root{
+  color-scheme: light;
+  --surface-1:#fcfcfb; --plane:#f9f9f7;
+  --text-primary:#0b0b0b; --text-secondary:#52514e; --muted:#898781;
+  --grid:#e1e0d9; --axis:#c3c2b7; --border:rgba(11,11,11,.10);
+  --series-1:#2a78d6; --series-2:#eb6834;
+  --accent:#2a78d6; --accent-soft:rgba(42,120,214,.10);
+  --good:#0ca30c; --critical:#d03b3b; --mark:rgba(237,161,0,.35);
+  --h0:#e6e5df; --h1:#cde2fb; --h2:#9ec5f4; --h3:#5598e7; --h4:#2a78d6; --h5:#184f95;
+  --shadow:0 1px 2px rgba(11,11,11,.05), 0 4px 16px rgba(11,11,11,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --surface-1:#1a1a19; --plane:#0d0d0d;
+    --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+    --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10);
+    --series-1:#3987e5; --series-2:#d95926;
+    --accent:#3987e5; --accent-soft:rgba(57,135,229,.16);
+    --good:#0ca30c; --critical:#d03b3b; --mark:rgba(237,161,0,.30);
+    --h0:#232322; --h1:#184f95; --h2:#256abf; --h3:#3987e5; --h4:#6da7ec; --h5:#9ec5f4;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --surface-1:#1a1a19; --plane:#0d0d0d;
+  --text-primary:#ffffff; --text-secondary:#c3c2b7; --muted:#898781;
+  --grid:#2c2c2a; --axis:#383835; --border:rgba(255,255,255,.10);
+  --series-1:#3987e5; --series-2:#d95926;
+  --accent:#3987e5; --accent-soft:rgba(57,135,229,.16);
+  --good:#0ca30c; --critical:#d03b3b; --mark:rgba(237,161,0,.30);
+  --h0:#232322; --h1:#184f95; --h2:#256abf; --h3:#3987e5; --h4:#6da7ec; --h5:#9ec5f4;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.3);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--plane); color:var(--text-primary);
+  font:15px/1.6 system-ui,-apple-system,"Segoe UI","Malgun Gothic","맑은 고딕",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 20px 80px}
+
+/* ── 헤더 ────────────────────────────────────────────────── */
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+h1{font-size:20px;font-weight:650;margin:0;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:13px}
+.spacer{flex:1}
+
+.btn{
+  appearance:none;border:1px solid var(--border);background:var(--surface-1);
+  color:var(--text-primary);font:inherit;font-size:13px;padding:7px 13px;
+  border-radius:8px;cursor:pointer;white-space:nowrap;
+}
+.btn:hover{background:var(--accent-soft);border-color:var(--accent)}
+.btn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled:hover{background:var(--surface-1);border-color:var(--border)}
+
+/* ── 카드 ────────────────────────────────────────────────── */
+.card{
+  background:var(--surface-1);border:1px solid var(--border);
+  border-radius:14px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px;
+}
+.card h2{font-size:14px;font-weight:650;margin:0 0 3px;letter-spacing:-.01em}
+.card .cap{color:var(--muted);font-size:12px;margin:0 0 14px}
+
+/* ── 드롭존 ──────────────────────────────────────────────── */
+#drop{
+  border:2px dashed var(--axis);border-radius:16px;padding:56px 24px;text-align:center;
+  background:var(--surface-1);cursor:pointer;transition:.15s;
+}
+#drop:hover,#drop.over{border-color:var(--accent);background:var(--accent-soft)}
+#drop .big{font-size:17px;font-weight:600;margin-bottom:8px}
+#drop .small{color:var(--text-secondary);font-size:13px;line-height:1.8}
+#drop code{background:var(--plane);padding:2px 6px;border-radius:5px;font-size:12px;border:1px solid var(--border)}
+
+/* ── 필터바 ──────────────────────────────────────────────── */
+.filters{display:flex;flex-direction:column;gap:12px}
+.frow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.flabel{font-size:12px;color:var(--muted);min-width:52px;font-weight:550}
+input[type=text],input[type=date],input[type=number],select,textarea{
+  font:inherit;font-size:13px;padding:7px 10px;border-radius:8px;
+  border:1px solid var(--border);background:var(--plane);color:var(--text-primary);
+}
+input[type=text]:focus,input[type=date]:focus,select:focus,textarea:focus{
+  outline:2px solid var(--accent);outline-offset:-1px;border-color:transparent;
+}
+#q{flex:1;min-width:220px;font-size:14px;padding:9px 12px}
+.hint{color:var(--muted);font-size:11.5px;line-height:1.7}
+
+/* ── 통계 타일 ───────────────────────────────────────────── */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));gap:10px}
+.tile{background:var(--plane);border:1px solid var(--border);border-radius:11px;padding:13px 14px}
+.tile .k{font-size:11.5px;color:var(--muted);font-weight:550;margin-bottom:5px}
+.tile .v{font-size:23px;font-weight:640;letter-spacing:-.02em;line-height:1.15}
+.tile .u{font-size:12px;color:var(--text-secondary);font-weight:450;margin-left:2px}
+
+/* ── 탭 ──────────────────────────────────────────────────── */
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border)}
+.tab{
+  appearance:none;border:0;background:none;font:inherit;font-size:14px;font-weight:550;
+  color:var(--muted);padding:9px 15px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;
+}
+.tab:hover{color:var(--text-primary)}
+.tab.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── 글 목록 ─────────────────────────────────────────────── */
+.rescount{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:13px;color:var(--text-secondary)}
+.rescount b{color:var(--text-primary);font-weight:650;font-size:15px}
+
+.post{
+  border:1px solid var(--border);border-radius:12px;padding:14px 16px;
+  margin-bottom:10px;background:var(--surface-1);
+}
+.post.bm{border-color:var(--accent);box-shadow:inset 3px 0 0 var(--accent)}
+.pmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;font-size:12px;color:var(--muted)}
+.date{font-weight:600;color:var(--text-secondary);font-variant-numeric:tabular-nums}
+.badge{
+  font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;
+  border:1px solid var(--border);background:var(--plane);color:var(--text-secondary);
+}
+.badge.post{color:#fff;background:var(--series-1);border-color:transparent}
+.badge.self{color:#fff;background:var(--series-2);border-color:transparent}
+.ptext{white-space:pre-wrap;word-break:break-word;font-size:14.5px;line-height:1.75}
+.ptext mark{background:var(--mark);color:inherit;border-radius:3px;padding:0 1px}
+.pimgs{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.pimgs img{
+  width:104px;height:104px;object-fit:cover;border-radius:9px;
+  border:1px solid var(--border);background:var(--plane);cursor:zoom-in;
+}
+.pfoot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:11px;padding-top:10px;border-top:1px solid var(--grid)}
+.stat{
+  font-size:12px;color:var(--text-secondary);display:inline-flex;align-items:center;gap:4px;
+  background:var(--plane);border:1px solid var(--border);border-radius:7px;padding:3px 8px;
+  font-variant-numeric:tabular-nums;
+}
+.stat b{font-weight:650;color:var(--text-primary)}
+.memo{
+  margin-top:9px;font-size:13px;background:var(--accent-soft);border-left:2px solid var(--accent);
+  padding:8px 11px;border-radius:0 8px 8px 0;white-space:pre-wrap;color:var(--text-secondary);
+}
+.editrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--grid)}
+.editrow input[type=number]{width:96px}
+.editrow textarea{flex:1;min-width:200px;min-height:38px;resize:vertical;font-size:13px}
+
+/* ── 달력 ────────────────────────────────────────────────── */
+.calscroll{overflow-x:auto;padding-bottom:6px}
+.legend{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);margin-top:12px;flex-wrap:wrap}
+.legend .sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+.lg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-secondary)}
+.lg .sw{width:11px;height:11px;border-radius:3px;display:inline-block}
+.lgrow{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:12px}
+
+/* ── 차트 ────────────────────────────────────────────────── */
+.chartbox{overflow-x:auto}
+svg{display:block;max-width:100%}
+svg text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.tt{
+  position:fixed;pointer-events:none;z-index:99;opacity:0;transition:opacity .1s;
+  background:var(--surface-1);border:1px solid var(--border);border-radius:9px;
+  padding:8px 11px;font-size:12.5px;box-shadow:var(--shadow);color:var(--text-primary);
+  max-width:280px;line-height:1.6;
+}
+.tt .tk{color:var(--muted);font-size:11.5px;margin-bottom:3px;font-weight:600}
+.tt .tv{font-variant-numeric:tabular-nums}
+
+details.tv{margin-top:12px}
+details.tv summary{cursor:pointer;font-size:12px;color:var(--muted);font-weight:550;padding:4px 0}
+details.tv summary:hover{color:var(--accent)}
+table{border-collapse:collapse;width:100%;font-size:12.5px;margin-top:8px}
+th,td{text-align:left;padding:6px 10px;border-bottom:1px solid var(--grid)}
+th{color:var(--muted);font-weight:600;font-size:11.5px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+
+.words{display:flex;flex-wrap:wrap;gap:7px}
+.word{
+  background:var(--plane);border:1px solid var(--border);border-radius:20px;
+  padding:5px 12px;font-size:13px;cursor:pointer;
+}
+.word:hover{background:var(--accent-soft);border-color:var(--accent)}
+.word .c{color:var(--muted);font-size:11.5px;margin-left:5px;font-variant-numeric:tabular-nums}
+
+.note{
+  background:var(--accent-soft);border-left:3px solid var(--accent);
+  padding:11px 14px;border-radius:0 9px 9px 0;font-size:13px;line-height:1.75;
+  color:var(--text-secondary);margin-bottom:14px;
+}
+.note b{color:var(--text-primary)}
+
+#lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;z-index:200;
+  align-items:center;justify-content:center;cursor:zoom-out;padding:24px;
+}
+#lightbox img{max-width:100%;max-height:100%;border-radius:8px}
+.hidden{display:none !important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div>
+    <h1>스레드 아카이브</h1>
+    <div class="sub" id="hsub">기록을 불러와 주세요</div>
+  </div>
+  <div class="spacer"></div>
+  <button class="btn sm" id="btnTheme">🌗 화면</button>
+  <button class="btn sm hidden" id="btnReload">📂 다른 파일</button>
+  <button class="btn sm hidden" id="btnCsv">⬇ CSV 저장</button>
+</header>
+
+<!-- 파일 불러오기 -->
+<div id="drop">
+  <div class="big">📂 여기에 <code>threads_and_replies.json</code> 을 끌어다 놓으세요</div>
+  <div class="small">
+    클릭해서 파일을 선택해도 됩니다.<br>
+    한 번 불러오면 이 브라우저에 저장되어, 다음부터는 열자마자 바로 나옵니다.<br>
+    <b>파일은 인터넷으로 전송되지 않고 이 컴퓨터 안에서만 처리됩니다.</b>
+  </div>
+</div>
+<input type="file" id="file" accept=".json,application/json" class="hidden">
+
+<!-- 본문 -->
+<div id="app" class="hidden">
+
+  <div class="card">
+    <div class="filters">
+      <div class="frow">
+        <input type="text" id="q" placeholder="키워드 검색 —  예: 육아 루틴   /   &quot;아침 루틴&quot;   /   육아 -광고">
+        <button class="btn sm" id="btnClear">지우기</button>
+      </div>
+      <div class="frow">
+        <span class="flabel">기간</span>
+        <input type="date" id="from"> <span style="color:var(--muted)">~</span> <input type="date" id="to">
+        <button class="btn sm" data-range="0">오늘</button>
+        <button class="btn sm" data-range="7">최근 7일</button>
+        <button class="btn sm" data-range="30">최근 30일</button>
+        <button class="btn sm" data-range="month">이번 달</button>
+        <button class="btn sm" data-range="all">전체</button>
+      </div>
+      <div class="frow">
+        <span class="flabel">유형</span>
+        <button class="btn sm on" data-type="post">원글</button>
+        <button class="btn sm on" data-type="self">이어쓴 글</button>
+        <button class="btn sm on" data-type="reply">남긴 답글</button>
+        <span style="width:10px"></span>
+        <button class="btn sm" data-flag="imgOnly">🖼 사진 있는 글만</button>
+        <button class="btn sm" data-flag="bmOnly">⭐ 북마크만</button>
+      </div>
+      <div class="frow">
+        <span class="flabel">정렬</span>
+        <select id="sort">
+          <option value="new">최신순</option>
+          <option value="old">오래된순</option>
+          <option value="long">글자수 많은순</option>
+          <option value="short">글자수 적은순</option>
+          <option value="views">조회수 높은순</option>
+          <option value="likes">반응(좋아요) 높은순</option>
+          <option value="rate">반응률 높은순 (좋아요÷조회수)</option>
+        </select>
+        <span class="hint" id="sortHint"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-view="list">📝 글 목록</button>
+    <button class="tab" data-view="cal">📅 날짜별 달력</button>
+    <button class="tab" data-view="stats">📊 통계</button>
+    <button class="tab" data-view="setup">⚙️ 설정 · 수치 입력</button>
+  </div>
+
+  <!-- 목록 -->
+  <div id="vList">
+    <div class="rescount">
+      <span><b id="rc">0</b>개</span>
+      <span id="rcsub" class="sub"></span>
+      <div class="spacer"></div>
+      <button class="btn sm" id="btnEdit">✏️ 수치·메모 입력하기</button>
+    </div>
+    <div id="posts"></div>
+    <div style="text-align:center;margin-top:16px">
+      <button class="btn hidden" id="btnMore">더 보기</button>
+    </div>
+  </div>
+
+  <!-- 달력 -->
+  <div id="vCal" class="hidden">
+    <div class="card">
+      <h2>날짜별 기록량</h2>
+      <p class="cap">칸을 클릭하면 그날 쓴 글만 모아서 보여줍니다. 색이 진할수록 그날 기록이 많습니다.</p>
+      <div id="calWrap" class="calscroll"></div>
+      <div class="legend">
+        <span>적음</span>
+        <span class="sw" style="background:var(--h0)"></span>
+        <span class="sw" style="background:var(--h1)"></span>
+        <span class="sw" style="background:var(--h2)"></span>
+        <span class="sw" style="background:var(--h3)"></span>
+        <span class="sw" style="background:var(--h4)"></span>
+        <span class="sw" style="background:var(--h5)"></span>
+        <span>많음</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통계 -->
+  <div id="vStats" class="hidden"></div>
+
+  <!-- 설정 -->
+  <div id="vSetup" class="hidden">
+    <div class="card">
+      <h2>내 계정 아이디</h2>
+      <p class="cap">내 글에 이어 쓴 글과, 남의 글에 남긴 답글을 구분하는 데 씁니다.</p>
+      <div class="frow">
+        <input type="text" id="selfUser" placeholder="예: mom_victory0901" style="min-width:240px">
+        <button class="btn sm" id="btnSelf">적용</button>
+        <span class="hint" id="selfHint"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>사진 표시</h2>
+      <p class="cap">
+        내보내기 파일에는 사진의 <b>파일 이름만</b> 들어있고 사진 자체는 별도 폴더에 있습니다.
+        사진을 보려면 이 HTML 파일을 압축 푼 폴더의 <b>맨 바깥(threads 폴더의 한 단계 위)</b>에 두고 여세요.
+      </p>
+      <div class="frow">
+        <button class="btn sm on" id="btnImg">🖼 사진 표시 켜기 / 끄기</button>
+        <span class="hint">사진이 안 보이면 파일 위치를 옮겨 보세요. 글 내용에는 영향 없습니다.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>조회수 · 반응 수치 넣기</h2>
+      <p class="cap">메타 내보내기 파일에는 조회수와 좋아요 수가 들어있지 않습니다. 직접 넣으면 그 기준으로 정렬할 수 있습니다.</p>
+      <div class="note">
+        <b>넣는 법</b> — 글 목록에서 <b>✏️ 수치·메모 입력하기</b>를 켜면 글마다 입력칸이 나옵니다.
+        스레드 앱의 인사이트 화면을 보면서 궁금한 글만 채워 넣으면 됩니다. 입력한 값은 이 브라우저에 저장됩니다.<br>
+        전부 채울 필요 없습니다. <b>원글 517개 중 성과가 궁금한 것만</b> 넣어도 정렬·비교가 됩니다.
+      </div>
+      <div class="frow">
+        <button class="btn sm" id="btnExpM">⬇ 입력한 수치 백업 (JSON)</button>
+        <button class="btn sm" id="btnImpM">⬆ 백업 불러오기</button>
+        <input type="file" id="fileM" accept=".json" class="hidden">
+        <span class="hint">브라우저를 지우면 입력값이 사라집니다. 가끔 백업해 두세요.</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>저장된 데이터 지우기</h2>
+      <p class="cap">이 브라우저에 저장된 기록·수치·메모를 모두 지웁니다.</p>
+      <button class="btn sm" id="btnWipe" style="color:var(--critical);border-color:var(--critical)">전체 삭제</button>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="tt" id="tt"></div>
+<div id="lightbox"><img id="lbimg" alt=""></div>
+
+<script>
+"use strict";
+
+/* ══ 상태 ══════════════════════════════════════════════════ */
+const PAGE = 50;
+const S = {
+  posts: [], meta: {}, filtered: [], view: 'list', page: 1,
+  sort: 'new', editMode: false, showImg: true, selfUser: '',
+  f: { q:'', from:'', to:'', types:new Set(['post','self','reply']), imgOnly:false, bmOnly:false }
+};
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+const TYPE_LABEL = { post:'원글', self:'이어쓴 글', reply:'답글' };
+
+/* ══ 저장소 (IndexedDB) ════════════════════════════════════ */
+const DB = (() => {
+  let p = null;
+  function open(){
+    if (p) return p;
+    p = new Promise((res, rej) => {
+      const r = indexedDB.open('threads-archive', 1);
+      r.onupgradeneeded = () => r.result.createObjectStore('kv');
+      r.onsuccess = () => res(r.result);
+      r.onerror = () => rej(r.error);
+    });
+    return p;
+  }
+  const tx = (mode, fn) => open().then(db => new Promise((res, rej) => {
+    const t = db.transaction('kv', mode), s = t.objectStore('kv');
+    const q = fn(s);
+    q.onsuccess = () => res(q.result);
+    q.onerror = () => rej(q.error);
+  }));
+  return {
+    get: k => tx('readonly',  s => s.get(k)),
+    set: (k, v) => tx('readwrite', s => s.put(v, k)),
+    del: k => tx('readwrite', s => s.delete(k)),
+  };
+})();
+
+/* ══ 인코딩 복구 ═══════════════════════════════════════════
+   메타 내보내기는 UTF-8 바이트를 latin-1 문자로 저장해 한글이 깨진다.
+   0~255 범위 문자로만 이루어진 문자열일 때만 되돌린다.                */
+const DEC = new TextDecoder('utf-8', { fatal:true });
+function fixText(s){
+  if (typeof s !== 'string' || !s) return '';
+  if (!/[\x80-\xFF]/.test(s)) return s;  // 되돌릴 게 없음 (순수 ASCII)
+  if (/[^\x00-\xFF]/.test(s))  return s;  // 이미 정상 (한글 등 포함)
+  try { return DEC.decode(Uint8Array.from(s, c => c.charCodeAt(0))); }
+  catch { return s; }
+}
+
+/* ══ 파싱 ══════════════════════════════════════════════════ */
+function hash(str){
+  let h = 5381;
+  for (let i = 0; i < str.length; i++) h = ((h << 5) + h + str.charCodeAt(i)) | 0;
+  return (h >>> 0).toString(36);
+}
+
+// 수치가 들어있는 다른 형식(API 등)도 인식되도록 넉넉하게 찾는다.
+const VIEW_KEYS = ['views','view_count','viewCount','impressions','reach'];
+const LIKE_KEYS = ['likes','like_count','likeCount','favorites','reactions'];
+const REPLY_KEYS= ['replies','reply_count','replyCount','comments'];
+const RESH_KEYS = ['reposts','repost_count','reshares','share_count','quotes'];
+function pick(obj, keys){
+  for (const k of keys){
+    const v = obj && obj[k];
+    if (typeof v === 'number' && isFinite(v)) return v;
+    if (typeof v === 'string' && v !== '' && !isNaN(+v)) return +v;
+  }
+  return null;
+}
+
+function parseExport(raw){
+  let arr = null;
+  if (Array.isArray(raw)) arr = raw;
+  else if (raw && typeof raw === 'object'){
+    arr = raw.text_post_app_text_posts || raw.text_post_app_media || raw.posts || raw.data || null;
+    if (!arr){                                  // 배열을 담은 첫 번째 키를 쓴다
+      for (const v of Object.values(raw)) if (Array.isArray(v) && v.length) { arr = v; break; }
+    }
+  }
+  if (!Array.isArray(arr)) throw new Error('글 목록을 찾지 못했습니다. threads_and_replies.json 파일이 맞는지 확인해 주세요.');
+
+  const out = [];
+  for (const item of arr){
+    const medias = Array.isArray(item.media) && item.media.length ? item.media : [item];
+    const first  = medias[0] || {};
+    const tap    = first.text_app_post || item.text_app_post || {};
+
+    // 본문: 여러 장 첨부 글은 최상위 title 에, 한 장짜리는 media[0].title 에 들어있다
+    let text = fixText(item.title || '');
+    if (!text) text = medias.map(m => fixText(m.title || '')).filter(Boolean).join('\n');
+    if (!text) text = fixText(item.text || item.caption || '');
+
+    const tsRaw = item.creation_timestamp ?? first.creation_timestamp ?? item.timestamp ?? item.taken_at;
+    if (tsRaw == null) continue;
+    const ts = +tsRaw > 1e11 ? Math.floor(+tsRaw / 1000) : +tsRaw;   // 밀리초 대응
+    const d  = new Date(ts * 1000);
+    if (isNaN(d)) continue;
+
+    const imgs = medias.map(m => m.uri).filter(u => typeof u === 'string' && u);
+
+    out.push({
+      id: `${ts}_${hash(text.slice(0,80) + imgs.join(','))}`,
+      ts, d,
+      day: `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,
+      text,
+      len: text.length,
+      isReply: !!tap.is_reply,
+      to: tap.in_reply_to_username || '',
+      imgs,
+      // 파일 안에 수치가 있으면 그대로 쓴다 (메타 공식 내보내기에는 없음)
+      aViews:  pick(item, VIEW_KEYS)  ?? pick(first, VIEW_KEYS)  ?? pick(tap, VIEW_KEYS),
+      aLikes:  pick(item, LIKE_KEYS)  ?? pick(first, LIKE_KEYS)  ?? pick(tap, LIKE_KEYS),
+      aReps:   pick(item, REPLY_KEYS) ?? pick(first, REPLY_KEYS) ?? pick(tap, REPLY_KEYS),
+      aResh:   pick(item, RESH_KEYS)  ?? pick(first, RESH_KEYS)  ?? pick(tap, RESH_KEYS),
+    });
+  }
+  if (!out.length) throw new Error('읽을 수 있는 글이 없습니다.');
+  out.sort((a,b) => b.ts - a.ts);
+  return out;
+}
+
+/* 내 아이디 추정 — 답글 대상 중 가장 자주 나오는 아이디 */
+function guessSelf(posts){
+  const c = {};
+  for (const p of posts) if (p.to) c[p.to] = (c[p.to]||0) + 1;
+  const top = Object.entries(c).sort((a,b) => b[1]-a[1])[0];
+  return top ? top[0] : '';
+}
+function typeOf(p){
+  if (!p.isReply) return 'post';
+  if (S.selfUser && p.to === S.selfUser) return 'self';
+  return 'reply';
+}
+
+/* ══ 수치 · 메모 ═══════════════════════════════════════════ */
+const m       = id => S.meta[id] || {};
+const views   = p => { const v = m(p.id).views; return v != null ? v : p.aViews; };
+const likes   = p => { const v = m(p.id).likes; return v != null ? v : p.aLikes; };
+const hasNums = () => S.posts.some(p => views(p) != null || likes(p) != null);
+function setMeta(id, patch){
+  const cur = { ...m(id), ...patch };
+  for (const k of Object.keys(cur)) if (cur[k] === null || cur[k] === '' ) delete cur[k];
+  if (Object.keys(cur).length) S.meta[id] = cur; else delete S.meta[id];
+  DB.set('meta', S.meta);
+}
+
+/* ══ 검색 ══════════════════════════════════════════════════ */
+function parseQuery(q){
+  const terms = []; const re = /"([^"]*)"|(\S+)/g; let mm;
+  while ((mm = re.exec(q))){
+    let t = mm[1] != null ? mm[1] : mm[2], neg = false;
+    if (mm[1] == null && t[0] === '-' && t.length > 1){ neg = true; t = t.slice(1); }
+    t = t.trim();
+    if (t) terms.push({ t: t.toLowerCase(), neg });
+  }
+  return terms;
+}
+function matches(p, terms){
+  if (!terms.length) return true;
+  const hay = (p.text + ' ' + p.to + ' ' + (m(p.id).memo || '')).toLowerCase();
+  for (const { t, neg } of terms){
+    const hit = hay.includes(t);
+    if (neg ? hit : !hit) return false;
+  }
+  return true;
+}
+
+/* ══ 필터 · 정렬 ═══════════════════════════════════════════ */
+function applyFilters(){
+  const terms = parseQuery(S.f.q);
+  const { from, to, types, imgOnly, bmOnly } = S.f;
+  S.filtered = S.posts.filter(p => {
+    if (!types.has(typeOf(p))) return false;
+    if (from && p.day < from) return false;
+    if (to   && p.day > to)   return false;
+    if (imgOnly && !p.imgs.length) return false;
+    if (bmOnly && !m(p.id).bm) return false;
+    return matches(p, terms);
+  });
+
+  const num = (v) => v == null ? -Infinity : v;
+  const cmp = {
+    new:  (a,b) => b.ts - a.ts,
+    old:  (a,b) => a.ts - b.ts,
+    long: (a,b) => b.len - a.len || b.ts - a.ts,
+    short:(a,b) => a.len - b.len || b.ts - a.ts,
+    views:(a,b) => num(views(b)) - num(views(a)) || b.ts - a.ts,
+    likes:(a,b) => num(likes(b)) - num(likes(a)) || b.ts - a.ts,
+    rate: (a,b) => {
+      const r = p => { const v = views(p), l = likes(p); return (v && l != null && v > 0) ? l / v : -Infinity; };
+      return r(b) - r(a) || b.ts - a.ts;
+    },
+  }[S.sort];
+  S.filtered.sort(cmp);
+  S.page = 1;
+}
+
+/* ══ 렌더: 글 목록 ═════════════════════════════════════════ */
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function highlight(text, terms){
+  let html = esc(text);
+  const pos = terms.filter(t => !t.neg).map(t => t.t).filter(Boolean)
+                   .sort((a,b) => b.length - a.length);
+  if (!pos.length) return html;
+  const re = new RegExp('(' + pos.map(t => t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|') + ')','gi');
+  // 태그 밖 텍스트만 치환
+  return html.split(/(&[a-z#0-9]+;)/gi)
+             .map((seg,i) => i % 2 ? seg : seg.replace(re, '<mark>$1</mark>')).join('');
+}
+const fmtDate = d => `${d.getFullYear()}. ${d.getMonth()+1}. ${d.getDate()}. (${'일월화수목금토'[d.getDay()]}) ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+const nf = n => n == null ? '–' : n.toLocaleString('ko-KR');
+
+function renderList(){
+  const terms  = parseQuery(S.f.q);
+  const slice  = S.filtered.slice(0, S.page * PAGE);
+  const box    = $('#posts');
+
+  $('#rc').textContent = S.filtered.length.toLocaleString('ko-KR');
+  const byType = { post:0, self:0, reply:0 };
+  for (const p of S.filtered) byType[typeOf(p)]++;
+  $('#rcsub').textContent = S.filtered.length
+    ? `(원글 ${byType.post} · 이어쓴 글 ${byType.self} · 답글 ${byType.reply})` : '';
+
+  if (!S.filtered.length){
+    box.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);padding:40px">
+      조건에 맞는 글이 없습니다. 검색어나 기간을 바꿔 보세요.</div>`;
+    $('#btnMore').classList.add('hidden');
+    return;
+  }
+
+  box.innerHTML = slice.map(p => {
+    const md = m(p.id), t = typeOf(p);
+    const v = views(p), l = likes(p);
+    const rate = (v && l != null && v > 0) ? (l / v * 100).toFixed(1) + '%' : null;
+    return `<article class="post${md.bm ? ' bm' : ''}" data-id="${p.id}">
+      <div class="pmeta">
+        <span class="date">${fmtDate(p.d)}</span>
+        <span class="badge ${t}">${TYPE_LABEL[t]}</span>
+        ${t === 'reply' ? `<span class="badge">@${esc(p.to)} 님 글에</span>` : ''}
+        ${p.imgs.length ? `<span class="badge">🖼 ${p.imgs.length}</span>` : ''}
+        <span style="color:var(--muted)">${p.len}자</span>
+      </div>
+      <div class="ptext">${highlight(p.text, terms) || '<span style="color:var(--muted)">(사진만 올린 글)</span>'}</div>
+      ${S.showImg && p.imgs.length ? `<div class="pimgs">${p.imgs.map(u =>
+        `<img loading="lazy" src="${esc(u)}" data-alt1="${esc('../' + u)}" data-alt2="${esc('threads/' + u)}" alt="첨부 사진">`).join('')}</div>` : ''}
+      ${md.memo ? `<div class="memo">📝 ${esc(md.memo)}</div>` : ''}
+      ${(v != null || l != null) ? `<div class="pfoot">
+        ${v != null ? `<span class="stat">👁 조회 <b>${nf(v)}</b></span>` : ''}
+        ${l != null ? `<span class="stat">❤️ 좋아요 <b>${nf(l)}</b></span>` : ''}
+        ${rate ? `<span class="stat">반응률 <b>${rate}</b></span>` : ''}
+      </div>` : ''}
+      <div class="pfoot" style="${(v != null || l != null) ? 'border-top:0;padding-top:0;margin-top:7px' : ''}">
+        <button class="btn sm act" data-act="bm">${md.bm ? '⭐ 북마크됨' : '☆ 북마크'}</button>
+        <button class="btn sm act" data-act="copy">본문 복사</button>
+      </div>
+      ${S.editMode ? `<div class="editrow">
+        <span class="hint">조회수</span><input type="number" min="0" class="in" data-k="views" value="${md.views ?? ''}" placeholder="–">
+        <span class="hint">좋아요</span><input type="number" min="0" class="in" data-k="likes" value="${md.likes ?? ''}" placeholder="–">
+        <textarea class="in" data-k="memo" placeholder="메모 (예: 협찬글, 반응 좋았음)">${esc(md.memo || '')}</textarea>
+      </div>` : ''}
+    </article>`;
+  }).join('');
+
+  $('#btnMore').classList.toggle('hidden', slice.length >= S.filtered.length);
+  $('#btnMore').textContent = `더 보기 (${slice.length.toLocaleString('ko-KR')} / ${S.filtered.length.toLocaleString('ko-KR')})`;
+}
+
+/* ══ 렌더: 달력 히트맵 ═════════════════════════════════════ */
+function dayCounts(){
+  const c = {};
+  for (const p of S.filtered) c[p.day] = (c[p.day] || 0) + 1;
+  return c;
+}
+function renderCal(){
+  const counts = dayCounts();
+  const all = S.posts.map(p => p.ts).sort((a,b) => a-b);
+  if (!all.length) return;
+  const start = new Date(all[0] * 1000), end = new Date(all[all.length-1] * 1000);
+  start.setHours(0,0,0,0); end.setHours(0,0,0,0);
+  start.setDate(start.getDate() - start.getDay());          // 주 시작(일요일)으로 맞춤
+
+  const max = Math.max(1, ...Object.values(counts));
+  const step = n => n === 0 ? 'var(--h0)'
+    : n <= Math.max(1, max*0.15) ? 'var(--h1)'
+    : n <= max*0.35 ? 'var(--h2)'
+    : n <= max*0.6  ? 'var(--h3)'
+    : n <= max*0.85 ? 'var(--h4)' : 'var(--h5)';
+
+  const CELL = 15, GAP = 3, LEFT = 30, TOP = 20;
+  const weeks = Math.ceil((end - start) / 864e5 / 7) + 1;
+  const W = LEFT + weeks * (CELL + GAP), H = TOP + 7 * (CELL + GAP) + 6;
+
+  let cells = '', labels = '', lastMonth = -1, lastLabelX = -99;
+  const cur = new Date(start);
+  for (let w = 0; w < weeks; w++){
+    for (let d = 0; d < 7; d++){
+      if (cur > end) break;
+      const key = `${cur.getFullYear()}-${String(cur.getMonth()+1).padStart(2,'0')}-${String(cur.getDate()).padStart(2,'0')}`;
+      const n = counts[key] || 0;
+      const x = LEFT + w * (CELL + GAP), y = TOP + d * (CELL + GAP);
+      if (cur >= new Date(all[0]*1000 - 864e5)){
+        cells += `<rect class="cal" x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="3"
+                   fill="${step(n)}" data-day="${key}" data-n="${n}" style="cursor:pointer"></rect>`;
+      }
+      if (d === 0 && cur.getMonth() !== lastMonth){
+        lastMonth = cur.getMonth();
+        if (x - lastLabelX >= 34){          // 라벨끼리 겹치지 않을 때만 그린다
+          labels += `<text x="${x}" y="${TOP-7}" font-size="10.5" fill="var(--muted)">${cur.getMonth()+1}월</text>`;
+          lastLabelX = x;
+        }
+      }
+      cur.setDate(cur.getDate() + 1);
+    }
+  }
+  const wd = ['','월','','수','','금',''];
+  const wdl = wd.map((s,i) => s ? `<text x="${LEFT-7}" y="${TOP + i*(CELL+GAP) + 11}" font-size="10.5" fill="var(--muted)" text-anchor="end">${s}</text>` : '').join('');
+
+  $('#calWrap').innerHTML = `<svg width="${W}" height="${H}" role="img" aria-label="날짜별 기록량 달력">${labels}${wdl}${cells}</svg>`;
+}
+
+/* ══ 렌더: 통계 ════════════════════════════════════════════ */
+function renderStats(){
+  const P = S.filtered;
+  const el = $('#vStats');
+  if (!P.length){ el.innerHTML = `<div class="card" style="text-align:center;color:var(--muted);padding:40px">조건에 맞는 글이 없습니다.</div>`; return; }
+
+  const byType = { post:0, self:0, reply:0 };
+  const days = new Set(), months = {}, wdays = Array(7).fill(0), hours = Array(24).fill(0);
+  const monthsByType = {};
+  let chars = 0;
+  for (const p of P){
+    const t = typeOf(p);
+    byType[t]++; days.add(p.day); chars += p.len;
+    const mo = p.day.slice(0,7);
+    months[mo] = (months[mo] || 0) + 1;
+    (monthsByType[mo] = monthsByType[mo] || { post:0, self:0, reply:0 })[t]++;
+    wdays[p.d.getDay()]++; hours[p.d.getHours()]++;
+  }
+  const moKeys = Object.keys(months).sort();
+  const span = (P[0] && P[P.length-1]) ? Math.max(1, Math.round(Math.abs(P[0].ts - P[P.length-1].ts) / 86400) + 1) : 1;
+  const busiest = moKeys.reduce((a,b) => months[b] > (months[a] ?? -1) ? b : a, moKeys[0]);
+
+  /* 수치 요약 */
+  const withV = P.filter(p => views(p) != null), withL = P.filter(p => likes(p) != null);
+  const sum = (a, f) => a.reduce((s,x) => s + f(x), 0);
+
+  /* 해시태그 · 단어 */
+  const tags = {}, words = {};
+  const STOP = new Set(('그리고 그래서 하지만 그런데 그러나 이런 저런 그런 정말 진짜 너무 아주 매우 다시 우리 저는 제가 내가 나는 너무나 이제 지금 오늘 어제 내일 하나 하는 하고 해서 있는 있다 없는 없다 같은 같이 위해 대한 통해 부터 까지 에서 에게 으로 라고 이라 그거 저거 이거 뭔가 거의 조금 많이 계속 항상 그냥 근데 요즘 어떤 무슨 이렇게 저렇게 그렇게 것도 것은 것이 수가 수도 때문 때는 라는 하며 하면 되는 된다 한다 합니다 입니다 습니다 있습니다 없습니다 그리고요 이런거 그런거').split(/\s+/));
+  for (const p of P){
+    for (const t of (p.text.match(/#[^\s#.,!?()\[\]{}“”"']+/g) || [])){
+      const k = t.slice(1); if (k.length > 1) tags[k] = (tags[k] || 0) + 1;
+    }
+    for (const w of p.text.replace(/#[^\s]+/g,' ').split(/[^가-힣A-Za-z0-9]+/)){
+      const k = w.trim();
+      if (k.length >= 2 && k.length <= 12 && !STOP.has(k) && !/^\d+$/.test(k)) words[k] = (words[k] || 0) + 1;
+    }
+  }
+  const topTags  = Object.entries(tags ).sort((a,b) => b[1]-a[1]).slice(0,25);
+  const topWords = Object.entries(words).sort((a,b) => b[1]-a[1]).slice(0,35);
+
+  el.innerHTML = `
+  <div class="card">
+    <h2>한눈에 보기</h2>
+    <p class="cap">지금 걸어 둔 필터 기준입니다.</p>
+    <div class="tiles">
+      <div class="tile"><div class="k">전체 기록</div><div class="v">${nf(P.length)}<span class="u">개</span></div></div>
+      <div class="tile"><div class="k">원글</div><div class="v">${nf(byType.post)}<span class="u">개</span></div></div>
+      <div class="tile"><div class="k">이어쓴 글</div><div class="v">${nf(byType.self)}<span class="u">개</span></div></div>
+      <div class="tile"><div class="k">남긴 답글</div><div class="v">${nf(byType.reply)}<span class="u">개</span></div></div>
+      <div class="tile"><div class="k">활동한 날</div><div class="v">${nf(days.size)}<span class="u">일 / ${span}일</span></div></div>
+      <div class="tile"><div class="k">하루 평균</div><div class="v">${(P.length/span).toFixed(1)}<span class="u">개</span></div></div>
+      <div class="tile"><div class="k">평균 글자수</div><div class="v">${Math.round(chars/P.length)}<span class="u">자</span></div></div>
+      <div class="tile"><div class="k">가장 활발한 달</div><div class="v" style="font-size:18px">${busiest ? `${+busiest.slice(0,4)}년 ${+busiest.slice(5)}월` : '–'}</div></div>
+    </div>
+  </div>
+
+  ${(withV.length || withL.length) ? `
+  <div class="card">
+    <h2>입력한 성과 수치</h2>
+    <p class="cap">직접 입력했거나 파일에 들어있던 수치만 집계합니다.</p>
+    <div class="tiles">
+      ${withV.length ? `
+      <div class="tile"><div class="k">조회수 입력된 글</div><div class="v">${nf(withV.length)}<span class="u">개</span></div></div>
+      <div class="tile"><div class="k">평균 조회수</div><div class="v">${nf(Math.round(sum(withV, p => views(p)) / withV.length))}</div></div>
+      <div class="tile"><div class="k">최고 조회수</div><div class="v">${nf(Math.max(...withV.map(p => views(p))))}</div></div>` : ''}
+      ${withL.length ? `
+      <div class="tile"><div class="k">평균 좋아요</div><div class="v">${nf(Math.round(sum(withL, p => likes(p)) / withL.length))}</div></div>
+      <div class="tile"><div class="k">최고 좋아요</div><div class="v">${nf(Math.max(...withL.map(p => likes(p))))}</div></div>` : ''}
+    </div>
+  </div>` : ''}
+
+  <div class="card">
+    <h2>월별 기록 추이</h2>
+    <p class="cap">막대에 마우스를 올리면 상세 숫자가 나옵니다.</p>
+    <div class="lgrow">
+      <span class="lg"><span class="sw" style="background:var(--series-1)"></span>원글 · 이어쓴 글</span>
+      <span class="lg"><span class="sw" style="background:var(--series-2)"></span>남긴 답글</span>
+    </div>
+    <div class="chartbox">${barStacked(moKeys, monthsByType)}</div>
+    ${tableView('월', moKeys.map(k => [k, monthsByType[k].post + monthsByType[k].self, monthsByType[k].reply]), ['원글+이어쓴 글','답글'])}
+  </div>
+
+  <div class="card">
+    <h2>요일별 기록량</h2>
+    <p class="cap">어느 요일에 가장 많이 쓰는지 봅니다.</p>
+    <div class="chartbox">${barSimple(['일','월','화','수','목','금','토'], wdays, 46)}</div>
+    ${tableView('요일', ['일','월','화','수','목','금','토'].map((d,i) => [d, wdays[i]]), ['기록 수'])}
+  </div>
+
+  <div class="card">
+    <h2>시간대별 기록량</h2>
+    <p class="cap">하루 중 언제 주로 쓰는지 봅니다.</p>
+    <div class="chartbox">${barSimple(Array.from({length:24}, (_,i) => String(i)), hours, 30, Array.from({length:24}, (_,i) => i + '시 ~ ' + i + '시 59분'))}</div>
+    ${tableView('시간대', hours.map((n,i) => [i + '시', n]), ['기록 수'])}
+  </div>
+
+  ${topTags.length ? `
+  <div class="card">
+    <h2>자주 쓴 해시태그</h2>
+    <p class="cap">클릭하면 그 태그가 들어간 글만 모아 봅니다.</p>
+    <div class="words">${topTags.map(([w,c]) => `<span class="word" data-w="#${esc(w)}">#${esc(w)}<span class="c">${c}</span></span>`).join('')}</div>
+  </div>` : ''}
+
+  <div class="card">
+    <h2>자주 쓴 단어</h2>
+    <p class="cap">띄어쓰기 기준 단순 집계라 조사가 붙은 형태로 나올 수 있습니다. 클릭하면 그 단어가 든 글만 봅니다.</p>
+    <div class="words">${topWords.map(([w,c]) => `<span class="word" data-w="${esc(w)}">${esc(w)}<span class="c">${c}</span></span>`).join('')}</div>
+  </div>`;
+}
+
+/* ── 차트: 누적 막대 (2계열) ── */
+function barStacked(keys, data){
+  if (!keys.length) return '';
+  const BW = Math.max(26, Math.min(56, Math.floor(760 / keys.length) - 10));
+  const GAP = 10, L = 44, R = 12, T = 14, BOT = 42, PH = 200;
+  const W = L + keys.length * (BW + GAP) + R, H = T + PH + BOT;
+  const max = Math.max(1, ...keys.map(k => data[k].post + data[k].self + data[k].reply));
+  const nice = Math.ceil(max / 4 / (max > 400 ? 100 : max > 100 ? 25 : 5)) * (max > 400 ? 100 : max > 100 ? 25 : 5) * 4;
+  const y = v => T + PH - (v / nice) * PH;
+
+  let grid = '';
+  for (let i = 0; i <= 4; i++){
+    const v = nice / 4 * i;
+    grid += `<line x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"></line>
+             <text x="${L-8}" y="${y(v)+4}" font-size="10.5" fill="var(--muted)" text-anchor="end">${v.toLocaleString('ko-KR')}</text>`;
+  }
+  let bars = '';
+  keys.forEach((k,i) => {
+    const d = data[k], own = d.post + d.self, rep = d.reply, tot = own + rep;
+    const x = L + i * (BW + GAP);
+    const hRep = (rep / nice) * PH, hOwn = (own / nice) * PH;
+    const yRep = T + PH - hRep;
+    const yOwn = yRep - hOwn - (rep && own ? 2 : 0);   // 2px 간격
+    const label = `${k.replace('-','년 ')}월`;
+    const tip = `${label}|전체 ${tot}개 · 원글+이어쓴 글 ${own} · 답글 ${rep}`;
+    if (rep > 0) bars += `<rect class="bar" x="${x}" y="${yRep}" width="${BW}" height="${Math.max(2,hRep)}" rx="3" fill="var(--series-2)" data-tip="${esc(tip)}"></rect>`;
+    if (own > 0) bars += `<rect class="bar" x="${x}" y="${yOwn}" width="${BW}" height="${Math.max(2,hOwn)}" rx="3" fill="var(--series-1)" data-tip="${esc(tip)}"></rect>`;
+    bars += `<text x="${x + BW/2}" y="${T+PH+16}" font-size="10.5" fill="var(--muted)" text-anchor="middle">${(+k.slice(5))}월</text>
+             <text x="${x + BW/2}" y="${T+PH+30}" font-size="9.5" fill="var(--muted)" text-anchor="middle">${k.slice(2,4)}</text>`;
+  });
+  return `<svg width="${W}" height="${H}" role="img" aria-label="월별 기록 추이">${grid}
+    <line x1="${L}" y1="${T+PH}" x2="${W-R}" y2="${T+PH}" stroke="var(--axis)" stroke-width="1"></line>${bars}</svg>`;
+}
+
+/* ── 차트: 단일 계열 막대 ── */
+function barSimple(labels, vals, bw, tipLabels){
+  const GAP = 8, L = 40, R = 12, T = 14, BOT = 28, PH = 150;
+  const BW = Math.max(14, Math.min(bw, Math.floor(720 / labels.length) - GAP));
+  const W = L + labels.length * (BW + GAP) + R, H = T + PH + BOT;
+  const max = Math.max(1, ...vals);
+  const nice = Math.max(1, Math.ceil(max / 4 / (max > 400 ? 50 : max > 100 ? 10 : 2)) * (max > 400 ? 50 : max > 100 ? 10 : 2) * 4);
+  const y = v => T + PH - (v / nice) * PH;
+  const peak = vals.indexOf(max);
+
+  let grid = '';
+  for (let i = 0; i <= 4; i++){
+    const v = nice / 4 * i;
+    grid += `<line x1="${L}" y1="${y(v)}" x2="${W-R}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"></line>
+             <text x="${L-8}" y="${y(v)+4}" font-size="10.5" fill="var(--muted)" text-anchor="end">${v.toLocaleString('ko-KR')}</text>`;
+  }
+  let bars = '';
+  labels.forEach((lb,i) => {
+    const x = L + i * (BW + GAP), h = (vals[i] / nice) * PH;
+    bars += `<rect class="bar" x="${x}" y="${T+PH-h}" width="${BW}" height="${Math.max(2,h)}" rx="3"
+               fill="var(--series-1)" data-tip="${esc(((tipLabels && tipLabels[i]) || lb) + '|' + vals[i] + '개')}"></rect>`;
+    // 최고점만 직접 라벨 (모든 막대에 숫자를 붙이지 않는다)
+    if (i === peak && max > 0)
+      bars += `<text x="${x+BW/2}" y="${T+PH-h-5}" font-size="10.5" font-weight="650" fill="var(--text-secondary)" text-anchor="middle">${max.toLocaleString('ko-KR')}</text>`;
+    bars += `<text x="${x+BW/2}" y="${T+PH+15}" font-size="10.5" fill="var(--muted)" text-anchor="middle">${esc(lb)}</text>`;
+  });
+  return `<svg width="${W}" height="${H}" role="img">${grid}
+    <line x1="${L}" y1="${T+PH}" x2="${W-R}" y2="${T+PH}" stroke="var(--axis)" stroke-width="1"></line>${bars}</svg>`;
+}
+
+function tableView(head, rows, cols){
+  return `<details class="tv"><summary>표로 보기</summary><table>
+    <thead><tr><th>${esc(head)}</th>${cols.map(c => `<th class="n">${esc(c)}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map(r => `<tr><td>${esc(r[0])}</td>${r.slice(1).map(v => `<td class="n">${nf(v)}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table></details>`;
+}
+
+/* ══ 전체 다시 그리기 ══════════════════════════════════════ */
+function render(){
+  applyFilters();
+  $('#vList' ).classList.toggle('hidden', S.view !== 'list');
+  $('#vCal'  ).classList.toggle('hidden', S.view !== 'cal');
+  $('#vStats').classList.toggle('hidden', S.view !== 'stats');
+  $('#vSetup').classList.toggle('hidden', S.view !== 'setup');
+  if (S.view === 'list')  renderList();
+  if (S.view === 'cal')   renderCal();
+  if (S.view === 'stats') renderStats();
+
+  const ok = hasNums();
+  for (const v of ['views','likes','rate']) $(`#sort option[value="${v}"]`).disabled = !ok;
+  $('#sortHint').textContent = ok ? '' : '조회수·반응 정렬은 수치를 입력해야 켜집니다 (⚙️ 설정 탭 참고)';
+  if (!ok && ['views','likes','rate'].includes(S.sort)){ S.sort = 'new'; $('#sort').value = 'new'; }
+}
+
+/* ══ 데이터 적재 ═══════════════════════════════════════════ */
+async function load(posts, save){
+  S.posts = posts;
+  if (!S.selfUser){ S.selfUser = guessSelf(posts); DB.set('selfUser', S.selfUser); }
+  $('#selfUser').value = S.selfUser;
+  $('#selfHint').textContent = S.selfUser ? '자동 추정값입니다. 다르면 고쳐 주세요.' : '';
+
+  const first = posts[posts.length-1].d, last = posts[0].d;
+  $('#hsub').textContent =
+    `${posts.length.toLocaleString('ko-KR')}개 · ${first.getFullYear()}.${first.getMonth()+1}.${first.getDate()} ~ ${last.getFullYear()}.${last.getMonth()+1}.${last.getDate()}`;
+
+  $('#drop').classList.add('hidden');
+  $('#app').classList.remove('hidden');
+  $('#btnReload').classList.remove('hidden');
+  $('#btnCsv').classList.remove('hidden');
+
+  if (save) await DB.set('posts', posts.map(p => ({ ...p, d: undefined })));
+  render();
+}
+function revive(rows){
+  return rows.map(r => ({ ...r, d: new Date(r.ts * 1000) })).sort((a,b) => b.ts - a.ts);
+}
+function readFile(f){
+  const fr = new FileReader();
+  fr.onload = () => {
+    try { load(parseExport(JSON.parse(fr.result)), true); }
+    catch (e){ alert('파일을 읽지 못했습니다.\n\n' + e.message); }
+  };
+  fr.onerror = () => alert('파일을 읽지 못했습니다.');
+  fr.readAsText(f, 'utf-8');
+}
+
+/* ══ CSV ═══════════════════════════════════════════════════ */
+function toCsv(){
+  const q = s => '"' + String(s ?? '').replace(/"/g,'""') + '"';
+  const head = ['날짜','시간','요일','유형','답글 대상','본문','글자수','사진 수','조회수','좋아요','반응률(%)','북마크','메모'];
+  const rows = S.filtered.map(p => {
+    const md = m(p.id), v = views(p), l = likes(p);
+    return [
+      p.day,
+      `${String(p.d.getHours()).padStart(2,'0')}:${String(p.d.getMinutes()).padStart(2,'0')}`,
+      '일월화수목금토'[p.d.getDay()],
+      TYPE_LABEL[typeOf(p)], p.to, p.text, p.len, p.imgs.length,
+      v ?? '', l ?? '', (v && l != null && v > 0) ? (l/v*100).toFixed(2) : '',
+      md.bm ? 'O' : '', md.memo ?? ''
+    ].map(q).join(',');
+  });
+  const csv = '﻿' + [head.map(q).join(',')].concat(rows).join('\r\n');   // BOM: 엑셀 한글
+  const url = URL.createObjectURL(new Blob([csv], { type:'text/csv;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `스레드기록_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+function download(obj, name){
+  const url = URL.createObjectURL(new Blob([JSON.stringify(obj, null, 2)], { type:'application/json' }));
+  const a = document.createElement('a'); a.href = url; a.download = name; a.click(); URL.revokeObjectURL(url);
+}
+
+/* ══ 이벤트 ════════════════════════════════════════════════ */
+const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+
+// 파일
+$('#drop').onclick = () => $('#file').click();
+$('#btnReload').onclick = () => $('#file').click();
+$('#file').onchange = e => { if (e.target.files[0]) readFile(e.target.files[0]); e.target.value = ''; };
+['dragenter','dragover'].forEach(ev => document.addEventListener(ev, e => {
+  e.preventDefault(); if (!$('#drop').classList.contains('hidden')) $('#drop').classList.add('over');
+}));
+['dragleave','drop'].forEach(ev => document.addEventListener(ev, e => {
+  e.preventDefault(); $('#drop').classList.remove('over');
+}));
+document.addEventListener('drop', e => {
+  const f = e.dataTransfer && e.dataTransfer.files[0];
+  if (f) readFile(f);
+});
+
+// 검색 · 기간 · 정렬
+$('#q').oninput = debounce(e => { S.f.q = e.target.value.trim(); render(); }, 180);
+$('#btnClear').onclick = () => { $('#q').value = ''; S.f.q = ''; render(); };
+$('#from').onchange = e => { S.f.from = e.target.value; render(); };
+$('#to').onchange   = e => { S.f.to   = e.target.value; render(); };
+$('#sort').onchange = e => { S.sort = e.target.value; render(); };
+
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+$$('[data-range]').forEach(b => b.onclick = () => {
+  const r = b.dataset.range, now = new Date();
+  if (r === 'all'){ S.f.from = S.f.to = ''; }
+  else if (r === 'month'){ S.f.from = ymd(new Date(now.getFullYear(), now.getMonth(), 1)); S.f.to = ymd(now); }
+  else { const d = new Date(now); d.setDate(d.getDate() - (+r)); S.f.from = ymd(d); S.f.to = ymd(now); }
+  $('#from').value = S.f.from; $('#to').value = S.f.to;
+  render();
+});
+
+// 유형 · 토글
+$$('[data-type]').forEach(b => b.onclick = () => {
+  const t = b.dataset.type;
+  if (S.f.types.has(t) && S.f.types.size > 1) S.f.types.delete(t); else S.f.types.add(t);
+  b.classList.toggle('on', S.f.types.has(t));
+  render();
+});
+$$('[data-flag]').forEach(b => b.onclick = () => {
+  const k = b.dataset.flag; S.f[k] = !S.f[k]; b.classList.toggle('on', S.f[k]); render();
+});
+
+// 탭
+$$('.tab').forEach(t => t.onclick = () => {
+  $$('.tab').forEach(x => x.classList.remove('on'));
+  t.classList.add('on'); S.view = t.dataset.view; render();
+});
+
+$('#btnMore').onclick = () => { S.page++; renderList(); };
+$('#btnEdit').onclick = () => {
+  S.editMode = !S.editMode;
+  $('#btnEdit').classList.toggle('on', S.editMode);
+  $('#btnEdit').textContent = S.editMode ? '✏️ 입력 끝내기' : '✏️ 수치·메모 입력하기';
+  renderList();
+};
+$('#btnCsv').onclick = toCsv;
+
+// 글 목록 내부 동작
+$('#posts').addEventListener('click', e => {
+  const img = e.target.closest('.pimgs img');
+  if (img){ $('#lbimg').src = img.currentSrc || img.src; $('#lightbox').style.display = 'flex'; return; }
+  const btn = e.target.closest('.act'); if (!btn) return;
+  const id = e.target.closest('.post').dataset.id;
+  if (btn.dataset.act === 'bm'){ setMeta(id, { bm: m(id).bm ? null : 1 }); renderList(); }
+  if (btn.dataset.act === 'copy'){
+    const p = S.posts.find(x => x.id === id);
+    navigator.clipboard.writeText(p.text).then(() => { btn.textContent = '복사됨 ✓'; setTimeout(() => btn.textContent = '본문 복사', 1200); });
+  }
+});
+$('#posts').addEventListener('change', e => {
+  const inp = e.target.closest('.in'); if (!inp) return;
+  const id = e.target.closest('.post').dataset.id, k = inp.dataset.k;
+  const v = k === 'memo' ? inp.value.trim() : (inp.value === '' ? null : Math.max(0, Math.round(+inp.value)));
+  setMeta(id, { [k]: v });
+  if (k !== 'memo') render();
+});
+// 사진 경로 대체 시도
+$('#posts').addEventListener('error', e => {
+  const img = e.target;
+  if (img.tagName !== 'IMG') return;
+  if (img.dataset.alt1){ img.src = img.dataset.alt1; delete img.dataset.alt1; }
+  else if (img.dataset.alt2){ img.src = img.dataset.alt2; delete img.dataset.alt2; }
+  else img.style.display = 'none';
+}, true);
+
+$('#lightbox').onclick = () => { $('#lightbox').style.display = 'none'; $('#lbimg').src = ''; };
+
+// 달력 · 단어 클릭
+$('#calWrap').addEventListener('click', e => {
+  const c = e.target.closest('.cal'); if (!c) return;
+  S.f.from = S.f.to = c.dataset.day;
+  $('#from').value = $('#to').value = c.dataset.day;
+  S.view = 'list';
+  $$('.tab').forEach(x => x.classList.toggle('on', x.dataset.view === 'list'));
+  render();
+  window.scrollTo({ top:0, behavior:'smooth' });
+});
+$('#vStats').addEventListener('click', e => {
+  const w = e.target.closest('.word'); if (!w) return;
+  $('#q').value = S.f.q = w.dataset.w;
+  S.view = 'list';
+  $$('.tab').forEach(x => x.classList.toggle('on', x.dataset.view === 'list'));
+  render();
+  window.scrollTo({ top:0, behavior:'smooth' });
+});
+
+// 툴팁
+const tt = $('#tt');
+document.addEventListener('mousemove', e => {
+  const el = e.target.closest('[data-tip], .cal');
+  if (!el){ tt.style.opacity = 0; return; }
+  let k, v;
+  if (el.classList.contains('cal')){
+    const d = new Date(el.dataset.day + 'T00:00:00');
+    k = `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${'일월화수목금토'[d.getDay()]})`;
+    v = `${el.dataset.n}개 기록` + (+el.dataset.n ? ' · 클릭하면 이 날 글 보기' : '');
+  } else { [k, v] = el.dataset.tip.split('|'); }
+  tt.innerHTML = `<div class="tk">${esc(k)}</div><div class="tv">${esc(v)}</div>`;
+  tt.style.opacity = 1;
+  const r = tt.getBoundingClientRect();
+  tt.style.left = Math.min(e.clientX + 14, innerWidth  - r.width  - 10) + 'px';
+  tt.style.top  = Math.min(e.clientY + 16, innerHeight - r.height - 10) + 'px';
+});
+
+// 설정
+$('#btnSelf').onclick = () => {
+  S.selfUser = $('#selfUser').value.trim().replace(/^@/,'');
+  DB.set('selfUser', S.selfUser);
+  $('#selfHint').textContent = '적용되었습니다.';
+  render();
+};
+$('#btnImg').onclick = () => {
+  S.showImg = !S.showImg;
+  $('#btnImg').classList.toggle('on', S.showImg);
+  DB.set('showImg', S.showImg);
+  if (S.view === 'list') renderList();
+};
+$('#btnExpM').onclick = () => download(S.meta, `스레드수치백업_${new Date().toISOString().slice(0,10)}.json`);
+$('#btnImpM').onclick = () => $('#fileM').click();
+$('#fileM').onchange = e => {
+  const f = e.target.files[0]; if (!f) return;
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const o = JSON.parse(fr.result);
+      if (!o || typeof o !== 'object') throw new Error('형식이 올바르지 않습니다.');
+      S.meta = { ...S.meta, ...o }; DB.set('meta', S.meta);
+      alert('불러왔습니다.'); render();
+    } catch (err){ alert('불러오지 못했습니다.\n' + err.message); }
+  };
+  fr.readAsText(f, 'utf-8');
+  e.target.value = '';
+};
+$('#btnWipe').onclick = async () => {
+  if (!confirm('저장된 기록·수치·메모를 모두 지웁니다. 계속할까요?')) return;
+  await Promise.all(['posts','meta','selfUser','showImg'].map(k => DB.del(k)));
+  location.reload();
+};
+$('#btnTheme').onclick = () => {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : cur === 'light' ? '' : 'dark';
+  if (next) document.documentElement.setAttribute('data-theme', next);
+  else document.documentElement.removeAttribute('data-theme');
+  localStorage.setItem('ta-theme', next);
+  if (S.posts.length) render();
+};
+
+/* ══ 시작 ══════════════════════════════════════════════════ */
+(async () => {
+  const th = localStorage.getItem('ta-theme');
+  if (th) document.documentElement.setAttribute('data-theme', th);
+  try {
+    S.meta     = (await DB.get('meta'))     || {};
+    S.selfUser = (await DB.get('selfUser')) || '';
+    const si   =  await DB.get('showImg');
+    S.showImg  = si === undefined ? true : si;
+    $('#btnImg').classList.toggle('on', S.showImg);
+    const saved = await DB.get('posts');
+    if (saved && saved.length) load(revive(saved), false);
+  } catch (e){ /* 저장소를 못 쓰면 매번 파일을 불러오면 된다 */ }
+})();
+</script>
+</body>
+</html>
