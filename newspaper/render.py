@@ -21,6 +21,10 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).parent
 CHROMIUM_PATH = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 DEFAULT_CHARACTER_IMAGE = "assets/character-woman-cat.png"
+SERIF_FONTS = {
+    "font_serif_regular": "assets/fonts/NanumMyeongjo-Regular.woff2",
+    "font_serif_bold": "assets/fonts/NanumMyeongjo-Bold.woff2",
+}
 
 
 def resolve_image(path: str) -> str:
@@ -39,8 +43,20 @@ def resolve_image(path: str) -> str:
     return f"data:{mime};base64,{encoded}"
 
 
+def resolve_font(path: str) -> str:
+    """제목용 명조 웹폰트를 base64 data URI로 변환한다."""
+    p = ROOT / path
+    if not p.exists():
+        return ""
+    encoded = base64.b64encode(p.read_bytes()).decode("ascii")
+    return f"data:font/woff2;base64,{encoded}"
+
+
 def render_html(data: dict) -> str:
     data = dict(data)
+
+    for key, path in SERIF_FONTS.items():
+        data[key] = resolve_font(path)
 
     for key in ("headline", "core_news", "ad"):
         if key in data:
