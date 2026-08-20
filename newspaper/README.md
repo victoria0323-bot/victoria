@@ -73,6 +73,23 @@
 
 색·크기를 바꾸려면 `template.html.j2` 맨 위 `:root` 변수만 손대면 된다.
 
+### 테마 3종
+
+`--theme` 옵션으로 같은 데이터를 세 가지 지면으로 뽑을 수 있다.
+
+| 테마 | 설명 | 출력 파일 |
+|---|---|---|
+| `magazine` (기본) | 흰 지면, 명조 제목 + 고딕 본문, 무채색 + 적색 포인트 | `<날짜>.png` |
+| `newspaper` | 검정 제호 띠, 본문까지 명조, 실제 신문 1면 느낌 | `<날짜>-newspaper.png` |
+| `dark` | 짙은 남색 지면에 밝은 글씨, 금색 포인트 | `<날짜>-dark.png` |
+
+```bash
+python3 render.py data/2026-08-21.json --theme newspaper
+```
+
+데이터 JSON에 `"theme": "dark"` 를 넣어두면 그 파일은 항상 그 테마로 나온다.
+(`--theme` 옵션이 JSON 설정보다 우선한다.)
+
 ## 파일 구성
 
 - `template.html.j2` — Jinja2 HTML/CSS 템플릿 (디자인 전체)
