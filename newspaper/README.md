@@ -56,9 +56,21 @@
 | `sub_articles[].image` | 하단 보조기사 2개 각각의 배너 이미지 |
 | `character_image` | 지정 안 하면 `assets/character-woman-cat.png` 사용 |
 
-## 디자인 (신문 1면 레이아웃)
+## 디자인 (카드 레이아웃)
 
-카드 박스 대신 괘선(rule)으로 단을 나누는 신문 지면형 디자인이다.
+기본은 둥근 카드형 지면이다. 남색 상단 밴드에 캐릭터와 날짜 칩이 들어가고,
+그 아래로 흰 카드들이 이어진다.
+
+- 섹션 제목은 남색 알약(pill) 배지, 목록은 `01`~`05` 번호 배지로 표시한다.
+- Market Index 각 행과 TIP 단계의 아이콘은 이모지가 아니라 인라인 SVG라,
+  폰트나 환경에 상관없이 항상 같은 모양으로 나온다.
+- 포인트 컬러는 주황(`--accent`) 하나. 지표 등락의 빨강/파랑은 정보 전달용이다.
+- 후크 문구의 `30초` 같은 숫자 표현은 `render.py`가 자동으로 포인트 컬러를 입힌다.
+- `한 줄 요약`은 '꼭 봐야 할 기사' 카드 안쪽 연한 박스로 들어간다.
+
+### 나머지 테마 (괘선형)
+
+`newspaper` / `magazine` / `dark` 는 카드 박스 대신 괘선(rule)으로 단을 나눈다.
 
 - 제목·헤드라인·지표 숫자는 명조체(나눔명조), 본문은 고딕.
   폰트는 `assets/fonts/*.woff2` 를 `render.py`가 base64로 심어 넣으므로
@@ -79,12 +91,13 @@
 
 | 테마 | 설명 | 출력 파일 |
 |---|---|---|
-| `newspaper` (기본) | 검정 제호 띠, 본문까지 명조, 실제 신문 1면 느낌 | `<날짜>.png` |
+| `card` (기본) | 둥근 카드 + 캐릭터 밴드, 주황 포인트 | `<날짜>.png` |
+| `newspaper` | 검정 제호 띠, 본문까지 명조, 실제 신문 1면 느낌 | `<날짜>-newspaper.png` |
 | `magazine` | 흰 지면, 명조 제목 + 고딕 본문, 여백 넉넉 | `<날짜>-magazine.png` |
 | `dark` | 짙은 남색 지면에 밝은 글씨, 금색 포인트 | `<날짜>-dark.png` |
 
 ```bash
-python3 render.py data/2026-08-21.json --theme magazine
+python3 render.py data/2026-08-21.json --theme newspaper
 ```
 
 데이터 JSON에 `"theme": "dark"` 를 넣어두면 그 파일은 항상 그 테마로 나온다.
@@ -92,7 +105,8 @@ python3 render.py data/2026-08-21.json --theme magazine
 
 ## 파일 구성
 
-- `template.html.j2` — Jinja2 HTML/CSS 템플릿 (디자인 전체)
+- `template-card.html.j2` — 기본 카드형 지면 템플릿
+- `template.html.j2` — 괘선형 지면 템플릿 (newspaper / magazine / dark 공용)
 - `render.py` — JSON 데이터를 템플릿에 채운 뒤 헤드리스 크롬으로 PNG 스크린샷 생성
 - `data/sample.json` — 예시 데이터 (첨부 이미지 내용 기반)
 - `assets/` — 고정 캐릭터 이미지 등 재사용 이미지 자산
