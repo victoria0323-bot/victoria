@@ -56,9 +56,9 @@
 | `sub_articles[].image` | 하단 보조기사 2개 각각의 배너 이미지 |
 | `character_image` | 지정 안 하면 `assets/character-woman-cat.png` 사용 |
 
-## 디자인 (매거진 레이아웃)
+## 디자인 (신문 1면 레이아웃)
 
-카드 박스 대신 괘선(rule)으로 단을 나누는 매거진형 지면이다.
+카드 박스 대신 괘선(rule)으로 단을 나누는 신문 지면형 디자인이다.
 
 - 제목·헤드라인·지표 숫자는 명조체(나눔명조), 본문은 고딕.
   폰트는 `assets/fonts/*.woff2` 를 `render.py`가 base64로 심어 넣으므로
@@ -79,12 +79,12 @@
 
 | 테마 | 설명 | 출력 파일 |
 |---|---|---|
-| `magazine` (기본) | 흰 지면, 명조 제목 + 고딕 본문, 무채색 + 적색 포인트 | `<날짜>.png` |
-| `newspaper` | 검정 제호 띠, 본문까지 명조, 실제 신문 1면 느낌 | `<날짜>-newspaper.png` |
+| `newspaper` (기본) | 검정 제호 띠, 본문까지 명조, 실제 신문 1면 느낌 | `<날짜>.png` |
+| `magazine` | 흰 지면, 명조 제목 + 고딕 본문, 여백 넉넉 | `<날짜>-magazine.png` |
 | `dark` | 짙은 남색 지면에 밝은 글씨, 금색 포인트 | `<날짜>-dark.png` |
 
 ```bash
-python3 render.py data/2026-08-21.json --theme newspaper
+python3 render.py data/2026-08-21.json --theme magazine
 ```
 
 데이터 JSON에 `"theme": "dark"` 를 넣어두면 그 파일은 항상 그 테마로 나온다.
