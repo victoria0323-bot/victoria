@@ -4,504 +4,392 @@
 <meta charset="utf-8">
 <title>오늘의 1면 경제신문</title>
 <style>
+  {% if font_serif_regular %}
+  @font-face{
+    font-family:'NanumMyeongjoLocal';
+    src:url({{ font_serif_regular }}) format('woff2');
+    font-weight:400;font-style:normal;font-display:block;
+  }
+  {% endif %}
+  {% if font_serif_bold %}
+  @font-face{
+    font-family:'NanumMyeongjoLocal';
+    src:url({{ font_serif_bold }}) format('woff2');
+    font-weight:700;font-style:normal;font-display:block;
+  }
+  {% endif %}
+
   :root{
-    --navy:#0e1b3d;
-    --yellow:#ffd400;
-    --blue:#2f6fed;
-    --blue-light:#eaf1ff;
-    --green:#1fa971;
-    --green-light:#eafbf3;
-    --orange:#ff8a3d;
-    --orange-light:#fff3e8;
-    --red:#e0333f;
-    --red-light:#fdecee;
-    --ink:#171923;
-    --sub:#5b6472;
-    --line:#e4e7ee;
-    --card-radius:18px;
+    /* 무채색 + 포인트 컬러 1개 */
+    --ink:#16181d;
+    --ink-2:#3d434e;
+    --muted:#7c8496;
+    --faint:#a7adb9;
+    --rule:#dcdfe6;
+    --rule-soft:#eceef2;
+    --paper:#ffffff;
+    --accent:#a8121a;
+    /* 지표 등락은 장식이 아니라 정보 전달용 색 */
+    --up:#a8121a;
+    --down:#2f4f7a;
+
+    --serif:'NanumMyeongjoLocal','Nanum Myeongjo','Apple SD Gothic Neo',serif;
+    --sans:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     width:1080px;
-    background:#f5f6fa;
-    font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+    background:var(--paper);
+    font-family:var(--sans);
     color:var(--ink);
+    -webkit-font-smoothing:antialiased;
   }
-  .page{
-    width:1080px;
-    padding:28px;
-    background:#f5f6fa;
+  .page{width:1080px;padding:56px 60px 44px;background:var(--paper);}
+
+  /* ---------- 공용 괘선 ---------- */
+  .rule{border:0;border-top:1px solid var(--rule);margin:0;}
+  .rule-heavy{border:0;border-top:3px solid var(--ink);margin:0;}
+
+  /* ---------- 섹션 라벨 ---------- */
+  .sec-label{display:flex;align-items:baseline;gap:10px;margin-bottom:18px;}
+  .sec-label .num{
+    font-family:var(--serif);
+    font-size:15px;font-weight:700;color:var(--accent);letter-spacing:.5px;
+  }
+  .sec-label .txt{font-size:13px;font-weight:800;letter-spacing:3.5px;color:var(--ink);}
+  .sec-label .meta{
+    margin-left:auto;font-size:11.5px;letter-spacing:1.5px;color:var(--faint);font-weight:700;
   }
 
-  /* ---------- header ---------- */
-  .header-row{
-    display:flex;
-    gap:16px;
-    align-items:stretch;
-    margin-bottom:14px;
-  }
-  .title-badge{
-    flex:1;
-    background:var(--navy);
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    gap:16px;
-    padding:26px 30px;
-  }
-  .title-badge .news-pill{
-    background:#fff;
-    color:var(--navy);
-    font-weight:800;
-    font-size:24px;
-    padding:10px 16px;
-    border-radius:10px;
-    letter-spacing:1px;
-  }
-  .title-badge .title-text{
-    color:#fff;
-    font-size:38px;
-    font-weight:800;
-    line-height:1.15;
-  }
-  .title-badge .title-text .hi{
-    color:var(--yellow);
-  }
-  .date-box{
-    width:260px;
-    background:#fff;
-    border-radius:20px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:10px;
-    padding:10px;
-    border:2px solid var(--navy);
-  }
-  .date-box .date-line{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    font-size:26px;
-    font-weight:800;
-  }
-  .date-box .day-pill{
-    background:var(--navy);
-    color:#fff;
-    font-weight:800;
-    font-size:17px;
-    padding:5px 16px;
-    border-radius:999px;
+  /* ---------- 제호 ---------- */
+  .masthead{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;}
+  .mast-kicker{font-size:11px;font-weight:800;letter-spacing:5px;color:var(--accent);margin-bottom:10px;}
+  .wordmark{font-family:var(--serif);font-size:52px;font-weight:700;line-height:1.05;letter-spacing:-1px;}
+  .mast-right{text-align:right;padding-bottom:4px;}
+  .mast-date{font-family:var(--serif);font-size:24px;font-weight:700;letter-spacing:-.3px;}
+  .mast-day{margin-top:7px;font-size:11px;font-weight:800;letter-spacing:3px;color:var(--muted);}
+  .mast-rule{margin:18px 0 0;}
+
+  .lede{
+    padding:20px 0 22px;
+    font-family:var(--serif);
+    font-size:25px;line-height:1.5;font-weight:400;color:var(--ink-2);
   }
 
-  .hook-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:3px solid var(--yellow);
-    padding-bottom:12px;
-    margin-bottom:20px;
-  }
-  .hook-row .hook-text{
-    font-size:32px;
-    font-weight:800;
-  }
-  .hook-row .hook-text .hi{
-    background:linear-gradient(transparent 60%, var(--yellow) 60%);
-  }
-  .hook-row .hook-icon{font-size:30px;}
+  /* ---------- 상단 2단 ---------- */
+  .grid-top{display:flex;gap:0;padding:34px 0 6px;}
+  .grid-top .col-main{flex:1.18;min-width:0;padding-right:42px;}
+  .grid-top .col-side{flex:.82;min-width:0;padding-left:42px;border-left:1px solid var(--rule);}
 
-  /* ---------- layout ---------- */
-  .rows{
-    display:flex;
-    flex-direction:column;
-    gap:16px;
+  .core-title{
+    font-family:var(--serif);
+    font-size:29px;font-weight:700;line-height:1.35;margin:0 0 20px;letter-spacing:-.5px;
   }
-  .row-a{display:flex;gap:16px;align-items:stretch;}
-  .row-a > .card{flex:1.15;min-width:0;}
-  .row-a > .index-card{flex:0.95;min-width:0;}
-  .row-c{display:flex;gap:16px;align-items:stretch;}
-  .row-c > .card{flex:1.6;min-width:0;}
-  .sub-stack{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
+  .num-list{list-style:none;margin:0;padding:0;}
+  .num-list li{
+    display:flex;gap:14px;padding:12px 0;
+    border-top:1px solid var(--rule-soft);
+    font-size:15px;line-height:1.6;color:var(--ink-2);
+  }
+  .num-list li:first-child{border-top:none;padding-top:0;}
+  .num-list li .idx{
+    flex:none;width:20px;
+    font-family:var(--serif);font-size:14px;font-weight:700;color:var(--accent);padding-top:2px;
+  }
+  .core-illo{display:block;width:100%;height:auto;margin-top:24px;}
 
-  /* ---------- generic card ---------- */
-  .card{
-    position:relative;
-    background:#fff;
-    border-radius:var(--card-radius);
-    border:2px solid var(--line);
-    padding:18px 20px;
+  /* Market Index */
+  .idx-table{display:flex;flex-direction:column;}
+  .idx-row{display:flex;align-items:baseline;gap:12px;padding:11px 0;border-top:1px solid var(--rule-soft);}
+  .idx-row:first-child{border-top:none;}
+  .idx-row .lbl{flex:1;min-width:0;font-size:13.5px;color:var(--muted);font-weight:600;}
+  .idx-row .val{
+    font-family:var(--serif);
+    font-size:21px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:-.3px;
   }
-  .card-head{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:12px;
-  }
-  .num-badge{
-    width:26px;height:26px;
-    border-radius:50%;
-    color:#fff;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:800;font-size:15px;
-    flex:none;
-  }
-  .card-head .card-title{
-    font-size:19px;
-    font-weight:800;
-    flex:1;
-  }
-  .card-head .icon{font-size:20px;}
-  .card-head .head-icon-img{width:30px;height:30px;object-fit:contain;flex:none;}
-
-  .card.accent-blue{border-color:#cfe0ff;}
-  .card.accent-green{border-color:#c7ecdb;}
-  .card.accent-orange{border-color:#ffdcb8;}
-  .card.accent-red{border-color:#f7c9cd;}
-  .summary-card{
-    background:#fff;
-    border:2px solid #f7c9cd;
-    border-radius:var(--card-radius);
-    padding:18px 20px;
-    position:relative;
-  }
-  .num-badge.blue{background:var(--blue);}
-  .num-badge.green{background:var(--green);}
-  .num-badge.orange{background:var(--orange);}
-  .num-badge.red{background:var(--red);}
-
-  /* card 1: 핵심뉴스 */
-  .headline-title{
-    font-size:22px;
-    font-weight:800;
-    line-height:1.35;
-    margin:2px 0 12px;
-  }
-  .bullet-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;}
-  .bullet-list li{
-    display:flex;gap:8px;
-    font-size:15px;
-    line-height:1.45;
-    color:var(--ink);
-  }
-  .bullet-list li .chk{flex:none;font-size:15px;margin-top:1px;}
-  .core-illustration{width:108px;margin:10px auto 0;display:block;}
-
-  /* card: 오늘 꼭 봐야 할 기사 */
-  .article-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
-  .article-list li .a-title{font-size:15.5px;font-weight:700;display:flex;gap:6px;}
-  .article-list li .a-sub{font-size:13.5px;color:var(--sub);margin:3px 0 0 21px;line-height:1.4;}
-
-  /* card 4: 한줄요약 */
-  .summary-text{font-size:15.5px;line-height:1.6;color:var(--ink);}
-  .summary-illustration{width:64px;display:block;margin:10px 0 0 auto;}
-
-  /* ---------- right column ---------- */
-  .row-flex{display:flex;gap:16px;}
-  .row-flex > *{flex:1;min-width:0;}
-
-  .ad-card{
-    background:#fff;
-    border:2px solid var(--line);
-    border-radius:var(--card-radius);
-    padding:18px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .ad-brand{font-size:13px;font-weight:800;letter-spacing:2px;color:var(--sub);}
-  .ad-visual{
-    height:120px;
-    border-radius:12px;
-    background:linear-gradient(135deg,#dce8ff,#eef4ff);
-    display:flex;align-items:center;justify-content:center;
-    font-size:34px;
-    border:2px dashed #b9cdfa;
-    overflow:hidden;
-  }
-  .ad-visual img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
-  .ad-title{font-size:18px;font-weight:800;}
-  .ad-meta{font-size:13.5px;color:var(--sub);}
-
-  .index-card{
-    background:#fff;
-    border:2px solid var(--line);
-    border-radius:var(--card-radius);
-    padding:16px 18px;
-  }
-  .index-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;}
-  .index-head .idx-title{font-size:14px;font-weight:800;letter-spacing:.3px;color:var(--navy);}
-  .index-head .idx-meta{font-size:11.5px;color:var(--sub);font-weight:600;}
-  .index-list{display:flex;flex-direction:column;}
-  .index-row{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
-    padding:9px 2px;border-bottom:1px solid #f0f1f5;
-  }
-  .index-row:last-child{border-bottom:none;}
-  .index-row .ir-label{font-size:14px;color:var(--sub);font-weight:600;flex:1;min-width:0;}
-  .index-row .ir-right{display:flex;align-items:center;gap:10px;flex:none;}
-  .index-row .ir-value{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;}
-  .index-badge{
-    width:24px;height:24px;border-radius:50%;flex:none;
-    display:flex;align-items:center;justify-content:center;
-    color:#fff;font-size:11px;
-  }
-  .index-badge.up{background:var(--red);}
-  .index-badge.down{background:var(--blue);}
-  .index-row .ir-change{font-size:13px;font-weight:700;width:78px;text-align:right;font-variant-numeric:tabular-nums;}
-  .index-row .ir-change.up{color:var(--red);}
-  .index-row .ir-change.down{color:var(--blue);}
-  .badge-row{display:flex;gap:8px;margin-top:10px;}
-  .badge-row .b1,.badge-row .b2{
-    flex:1;text-align:center;font-size:12.5px;font-weight:800;
-    padding:7px 0;border-radius:8px;
-  }
-  .badge-row .b1{background:var(--blue-light);color:var(--blue);}
-  .badge-row .b2{background:var(--yellow);color:var(--navy);}
-
-  /* top photo (moved above the headline, below Market Index) */
-  .top-photo{
-    width:100%;
-    height:230px;
-    border-radius:var(--card-radius);
-    overflow:hidden;
-    background-size:cover;
-    background-position:center;
-    background-color:#dfe4ee;
-    border:2px solid var(--line);
+  .idx-row .chg{width:88px;text-align:right;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+  .idx-row .chg.up{color:var(--up);}
+  .idx-row .chg.down{color:var(--down);}
+  .idx-source{
+    margin-top:16px;padding-top:12px;border-top:1px solid var(--rule);
+    font-size:11px;letter-spacing:1.2px;color:var(--faint);font-weight:700;
   }
 
-  /* headline article */
-  .headline-card{
-    background:#fff;
-    border:2px solid var(--line);
-    border-radius:var(--card-radius);
-    padding:22px 24px;
-    display:flex;
-    gap:22px;
+  /* ---------- 헤드라인 ---------- */
+  .headline{display:flex;gap:40px;align-items:flex-start;padding:38px 0 40px;}
+  .headline .h-photo{
+    flex:0 0 44%;width:44%;align-self:stretch;min-height:360px;
+    background-size:cover;background-position:center;background-color:#eef0f4;
   }
-  .headline-card{flex-direction:column;}
-  .headline-card .h-text{width:100%;}
-  .h-kicker{font-size:14px;color:var(--sub);font-weight:700;margin-bottom:4px;}
-  .h-title{font-size:30px;font-weight:800;line-height:1.3;margin:0 0 14px;}
-  .h-sub{font-size:17px;font-weight:700;color:#333c4d;line-height:1.5;margin-bottom:12px;white-space:pre-line;}
-  .h-body{font-size:15px;color:var(--sub);line-height:1.75;}
-  .headline-card .top-photo{margin-bottom:20px;height:320px;border:none;}
+  .headline .h-text{flex:1;min-width:0;}
+  .h-title{
+    font-family:var(--serif);
+    font-size:42px;font-weight:700;line-height:1.24;letter-spacing:-1.4px;margin:0 0 18px;
+  }
+  .h-sub{
+    font-size:16px;font-weight:700;line-height:1.6;color:var(--ink-2);white-space:pre-line;
+    padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--rule);
+  }
+  .h-body{font-size:15px;line-height:1.9;color:var(--ink-2);text-align:justify;}
 
-  /* sub articles */
-  .sub-card{
-    background:#fff;
-    border:2px solid var(--line);
-    border-radius:var(--card-radius);
-    padding:18px 20px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .sub-title{font-size:16.5px;font-weight:800;line-height:1.35;}
-  .sub-body{font-size:13.5px;color:var(--sub);line-height:1.6;}
-  .sub-icon{
-    width:46px;height:46px;border-radius:12px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:22px;
-  }
-  .sub-image{width:100%;height:110px;border-radius:12px;overflow:hidden;}
-  .sub-image img{width:100%;height:100%;object-fit:cover;display:block;}
+  /* ---------- 하단 2단 ---------- */
+  .grid-bottom{display:flex;gap:0;padding:34px 0 6px;align-items:flex-start;}
+  .grid-bottom .col-list{flex:1;min-width:0;padding-right:42px;}
+  .grid-bottom .col-side{flex:1;min-width:0;padding-left:42px;border-left:1px solid var(--rule);}
 
-  /* tip box */
-  .tip-card{
-    background:#eef3ff;
-    border:2px solid #cddcfb;
-    border-radius:var(--card-radius);
-    padding:18px 22px;
+  .read-list{list-style:none;margin:0;padding:0;}
+  .read-list li{display:flex;gap:14px;padding:14px 0;border-top:1px solid var(--rule-soft);}
+  .read-list li:first-child{border-top:none;padding-top:0;}
+  .read-list .idx{
+    flex:none;width:20px;
+    font-family:var(--serif);font-size:14px;font-weight:700;color:var(--accent);padding-top:3px;
   }
-  .tip-head{display:flex;align-items:center;gap:8px;font-size:17px;font-weight:800;margin-bottom:14px;color:var(--navy);}
-  .tip-steps{display:flex;align-items:center;gap:4px;flex-wrap:nowrap;max-width:74%;}
-  .tip-step{
-    background:#fff;border-radius:12px;padding:8px 6px;
-    display:flex;flex-direction:column;align-items:center;gap:4px;
-    flex:1;min-width:0;
-    border:1px solid #dbe6fb;
-  }
-  .tip-step .ts-icon{font-size:18px;}
-  .tip-step .ts-label{font-size:11.5px;font-weight:800;color:var(--navy);}
-  .tip-step .ts-sub{font-size:10px;color:var(--sub);}
-  .tip-arrow{font-size:16px;color:#b7c6ea;font-weight:800;}
+  .read-list .r-title{font-size:16px;font-weight:800;line-height:1.4;letter-spacing:-.3px;}
+  .read-list .r-sub{font-size:13.5px;color:var(--muted);line-height:1.5;margin-top:4px;}
 
-  .tip-wrap{position:relative;padding-bottom:170px;}
-  .character-box{position:absolute;right:-8px;bottom:0;width:260px;z-index:2;}
+  /* 한 줄 요약 — 왼쪽 단 아래를 채우는 풀쿼트 */
+  .pullquote{margin-top:34px;padding-top:26px;border-top:3px solid var(--ink);}
+  .pullquote .pq-label{font-size:11px;font-weight:800;letter-spacing:3.5px;color:var(--accent);margin-bottom:14px;}
+  .pullquote .pq-text{
+    font-family:var(--serif);
+    font-size:23px;line-height:1.62;font-weight:400;color:var(--ink);letter-spacing:-.5px;
+  }
+  .pullquote .pq-illo{display:block;width:78px;height:auto;margin:18px 0 0 auto;}
+
+  /* 보조 기사 */
+  .sub-item{padding:26px 0;border-top:1px solid var(--rule-soft);}
+  .sub-item:first-child{padding-top:0;border-top:none;}
+  .sub-photo{
+    width:100%;height:150px;margin-bottom:16px;
+    background-size:cover;background-position:center;background-color:#eef0f4;
+  }
+  .sub-title{
+    font-family:var(--serif);
+    font-size:22px;font-weight:700;line-height:1.35;letter-spacing:-.6px;margin-bottom:11px;
+  }
+  .sub-body{font-size:14px;line-height:1.75;color:var(--ink-2);text-align:justify;}
+
+  /* ---------- TIP ---------- */
+  .tip{position:relative;padding:34px 0 78px;}
+  .tip-steps{display:flex;gap:0;margin-top:4px;max-width:70%;}
+  .tip-step{flex:1;min-width:0;padding:0 18px;border-left:1px solid var(--rule);}
+  .tip-step:first-child{padding-left:0;border-left:none;}
+  .tip-step .ts-num{
+    font-family:var(--serif);font-size:15px;font-weight:700;color:var(--accent);margin-bottom:8px;
+  }
+  .tip-step .ts-label{font-size:14px;font-weight:800;letter-spacing:-.3px;margin-bottom:5px;}
+  .tip-step .ts-sub{font-size:11.5px;line-height:1.5;color:var(--muted);}
+  .character-box{position:absolute;right:0;bottom:0;width:216px;z-index:2;}
   .character-box img{width:100%;height:auto;display:block;}
 
-  /* footer */
-  .footer-bar{
-    margin-top:20px;
-    background:var(--navy);
-    border-radius:16px;
-    padding:22px 22px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:16px;
-    color:#fff;
-    font-size:22px;
-    font-weight:800;
+  /* ---------- 꼬리말 ---------- */
+  .footer{
+    margin-top:40px;padding-top:18px;border-top:3px solid var(--ink);
+    display:flex;align-items:baseline;justify-content:space-between;
   }
-  .footer-bar .sep{opacity:.5;}
+  .footer .f-tag{font-family:var(--serif);font-size:19px;font-weight:700;}
+  .footer .f-handle{font-size:13px;font-weight:800;letter-spacing:2.5px;color:var(--muted);}
+  /* ================= 테마: 신문 1면형 ================= */
+  {% if theme == 'newspaper' %}
+  :root{
+    --ink:#000000;
+    --ink-2:#1b1b1b;
+    --muted:#4c4c4c;
+    --faint:#6d6d6d;
+    --rule:#000000;
+    --rule-soft:#b6b6b6;
+    --accent:#111111;
+    --up:#c0272d;
+    --down:#1f4e9c;
+  }
+  body{font-family:var(--serif);}
+  .masthead{
+    margin:-56px -60px 0;padding:34px 60px 26px;
+    background:#000;color:#fff;align-items:flex-end;
+  }
+  .mast-kicker{color:#fff;opacity:.6;}
+  .wordmark{font-size:58px;letter-spacing:-2px;}
+  .mast-date,.mast-day{color:#fff;}
+  .mast-day{opacity:.75;}
+  .mast-rule{border-top:3px solid #000;}
+  .lede{font-size:22px;padding:18px 0 18px;}
+  .sec-label .txt{letter-spacing:2px;}
+  .sec-label .num{color:var(--accent);}
+  .core-title{font-size:31px;}
+  .num-list li,.h-body,.sub-body{font-family:var(--serif);}
+  .num-list li{font-size:15.5px;line-height:1.7;}
+  .h-title{font-size:48px;letter-spacing:-2.2px;}
+  .h-body{font-size:15px;line-height:1.78;}
+  .sub-body{font-size:14.5px;line-height:1.72;}
+  .grid-top .col-side,.grid-bottom .col-side{border-left:1px solid #000;}
+  .pullquote{border-top:4px double #000;}
+  .read-list .r-sub{color:#4c4c4c;}
+  .footer{border-top:3px solid #000;}
+  {% endif %}
+
+  /* ================= 테마: 다크 모드 ================= */
+  {% if theme == 'dark' %}
+  :root{
+    --ink:#eef1f6;
+    --ink-2:#c3cad6;
+    --muted:#8b93a3;
+    --faint:#6c7484;
+    --rule:#2c323d;
+    --rule-soft:#232833;
+    --paper:#0f1218;
+    --accent:#d9a441;
+    --up:#f4645c;
+    --down:#6ea8fe;
+  }
+  .rule-heavy{border-top-color:#4a5260;}
+  .pullquote{border-top-color:#4a5260;}
+  .footer{border-top-color:#4a5260;}
+  .headline .h-photo,.sub-photo{background-color:#1a1f28;}
+  {% endif %}
 </style>
 </head>
 <body>
 <div class="page">
 
-  <div class="header-row">
-    <div class="title-badge">
-      <div class="news-pill">NEWS</div>
-      <div class="title-text">오늘의 1면 <span class="hi">경제신문</span> ✨</div>
+  <!-- 제호 -->
+  <div class="masthead">
+    <div>
+      <div class="mast-kicker">TODAY'S FRONT PAGE</div>
+      <div class="wordmark">오늘의 1면 경제신문</div>
     </div>
-    <div class="date-box">
-      <div class="date-line">📅 {{ date }}</div>
-      <div class="day-pill">{{ day_label }}</div>
+    <div class="mast-right">
+      <div class="mast-date">{{ date }}</div>
+      <div class="mast-day">{{ day_label }}</div>
     </div>
   </div>
+  <hr class="rule-heavy mast-rule">
 
-  <div class="hook-row">
-    <div class="hook-text"><span class="hi">{{ hook_text }}</span></div>
-    <div class="hook-icon">🔍</div>
-  </div>
+  <div class="lede">{{ hook_text }}</div>
+  <hr class="rule">
 
-  <div class="rows">
-
-    <div class="row-a">
-      <div class="card accent-blue">
-        <div class="card-head">
-          <div class="num-badge blue">1</div>
-          <div class="card-title">오늘의 핵심 뉴스</div>
-          <div class="icon">📢</div>
-        </div>
-        <div class="headline-title">{{ core_news.title }}</div>
-        <ul class="bullet-list">
-          {% for b in core_news.bullets %}
-          <li><span class="chk">✅</span><span>{{ b }}</span></li>
-          {% endfor %}
-        </ul>
-        {% if core_news.image %}
-        <img class="core-illustration" src="{{ core_news.image }}" alt="">
-        {% endif %}
+  <!-- 핵심 뉴스 / Market Index -->
+  <div class="grid-top">
+    <div class="col-main">
+      <div class="sec-label">
+        <span class="num">01</span>
+        <span class="txt">오늘의 핵심 뉴스</span>
       </div>
-
-      <div class="index-card">
-        <div class="index-head">
-          <div class="idx-title">Market Index</div>
-          <div class="idx-meta">{{ market_index.date_label }} · {{ market_index.edition }}</div>
-        </div>
-        <div class="index-list">
-          {% for row in market_index.rows %}
-          <div class="index-row">
-            <div class="ir-label">{{ row.label }}</div>
-            <div class="ir-right">
-              <div class="ir-value">{{ row.value }}</div>
-              {% if row.change %}
-              <div class="index-badge {{ row.direction }}">{{ '▲' if row.direction == 'up' else '▼' }}</div>
-              <div class="ir-change {{ row.direction }}">{{ row.change }}</div>
-              {% endif %}
-            </div>
-          </div>
-          {% endfor %}
-        </div>
-        <div class="badge-row">
-          <div class="b1">{{ market_index.badge1 }}</div>
-          <div class="b2">{{ market_index.badge2 }}</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="headline-card">
-      {% if headline.image %}
-      <div class="top-photo" style="background-image:url('{{ headline.image }}');"></div>
+      <h2 class="core-title">{{ core_news.title }}</h2>
+      <ul class="num-list">
+        {% for b in core_news.bullets %}
+        <li><span class="idx">{{ '%02d'|format(loop.index) }}</span><span>{{ b }}</span></li>
+        {% endfor %}
+      </ul>
+      {% if core_news.image %}
+      <img class="core-illo" src="{{ core_news.image }}" alt="">
       {% endif %}
-      <div class="h-text">
-        <div class="h-title">{{ headline.title }}</div>
-        <div class="h-sub">{{ headline.subtitle }}</div>
-        <div class="h-body">{{ headline.body }}</div>
-      </div>
     </div>
 
-    <div class="row-c">
-      <div class="card accent-orange">
-        <div class="card-head">
-          <div class="num-badge orange">2</div>
-          <div class="card-title">오늘 꼭 봐야 할 기사</div>
-          {% if must_read_image %}
-          <img class="head-icon-img" src="{{ must_read_image }}" alt="">
-          {% else %}
-          <div class="icon">📄</div>
-          {% endif %}
-        </div>
-        <ul class="article-list">
-          {% for a in must_read %}
-          <li>
-            <div class="a-title">✅ {{ a.title }}</div>
-            <div class="a-sub">- {{ a.sub }}</div>
-          </li>
-          {% endfor %}
-        </ul>
+    <div class="col-side">
+      <div class="sec-label">
+        <span class="txt">MARKET INDEX</span>
+        <span class="meta">{{ market_index.date_label }} · {{ market_index.edition }}</span>
       </div>
-
-      <div class="sub-stack">
-        {% for s in sub_articles %}
-        <div class="sub-card">
-          {% if s.image %}
-          <div class="sub-image"><img src="{{ s.image }}" alt=""></div>
-          {% else %}
-          <div class="sub-icon" style="background:{{ s.color_bg }};">{{ s.icon }}</div>
-          {% endif %}
-          <div class="sub-title">{{ s.title }}</div>
-          <div class="sub-body">{{ s.body }}</div>
+      <div class="idx-table">
+        {% for row in market_index.rows %}
+        <div class="idx-row">
+          <div class="lbl">{{ row.label }}</div>
+          <div class="val">{{ row.value }}</div>
+          <div class="chg {{ row.direction }}">
+            {%- if row.change %}{{ '▲' if row.direction == 'up' else '▼' }} {{ row.change }}{% endif -%}
+          </div>
         </div>
         {% endfor %}
       </div>
+      <div class="idx-source">{{ market_index.badge1 }} · {{ market_index.badge2 }}</div>
     </div>
-
-    <div class="summary-card">
-      <div class="card-head">
-        <div class="num-badge red">3</div>
-        <div class="card-title">한 줄 요약</div>
-        <div class="icon">💡</div>
-      </div>
-      <div class="summary-text">{{ summary }}</div>
-      {% if summary_image %}
-      <img class="summary-illustration" src="{{ summary_image }}" alt="">
-      {% endif %}
-    </div>
-
-    <div class="tip-wrap">
-      <div class="tip-card">
-        <div class="tip-head">💡 신문 읽는 TIP</div>
-        <div class="tip-steps">
-          {% for step in tip_steps %}
-          <div class="tip-step">
-            <div class="ts-icon">{{ step.icon }}</div>
-            <div class="ts-label">{{ step.label }}</div>
-            <div class="ts-sub">{{ step.sub }}</div>
-          </div>
-          {% if not loop.last %}<div class="tip-arrow">→</div>{% endif %}
-          {% endfor %}
-        </div>
-      </div>
-      {% if character_image %}
-      <div class="character-box">
-        <img src="{{ character_image }}" alt="character">
-      </div>
-      {% endif %}
-    </div>
-
   </div>
 
-  <div class="footer-bar">
-    <div>📖 {{ footer.tagline }}</div>
-    <div class="sep">|</div>
-    <div>{{ footer.handle }} ❤️</div>
+  <hr class="rule">
+
+  <!-- 헤드라인 -->
+  <div class="headline">
+    {% if headline.image %}
+    <div class="h-photo" style="background-image:url('{{ headline.image }}');"></div>
+    {% endif %}
+    <div class="h-text">
+      <h1 class="h-title">{{ headline.title }}</h1>
+      <div class="h-sub">{{ headline.subtitle }}</div>
+      <div class="h-body">{{ headline.body }}</div>
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- 꼭 봐야 할 기사 + 한 줄 요약 / 보조 기사 -->
+  <div class="grid-bottom">
+    <div class="col-list">
+      <div class="sec-label">
+        <span class="num">02</span>
+        <span class="txt">오늘 꼭 봐야 할 기사</span>
+      </div>
+      <ul class="read-list">
+        {% for a in must_read %}
+        <li>
+          <span class="idx">{{ '%02d'|format(loop.index) }}</span>
+          <div>
+            <div class="r-title">{{ a.title }}</div>
+            <div class="r-sub">{{ a.sub }}</div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="pullquote">
+        <div class="pq-label">한 줄 요약</div>
+        <div class="pq-text">{{ summary }}</div>
+        {% if summary_image %}
+        <img class="pq-illo" src="{{ summary_image }}" alt="">
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="col-side">
+      {% for s in sub_articles %}
+      <div class="sub-item">
+        {% if s.image %}
+        <div class="sub-photo" style="background-image:url('{{ s.image }}');"></div>
+        {% endif %}
+        <div class="sub-title">{{ s.title }}</div>
+        <div class="sub-body">{{ s.body }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <hr class="rule-heavy">
+
+  <!-- 신문 읽는 TIP -->
+  <div class="tip">
+    <div class="sec-label">
+      <span class="num">03</span>
+      <span class="txt">신문 읽는 TIP</span>
+    </div>
+    <div class="tip-steps">
+      {% for step in tip_steps %}
+      <div class="tip-step">
+        <div class="ts-num">{{ '%02d'|format(loop.index) }}</div>
+        <div class="ts-label">{{ step.label }}</div>
+        <div class="ts-sub">{{ step.sub }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if character_image %}
+    <div class="character-box">
+      <img src="{{ character_image }}" alt="character">
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="footer">
+    <div class="f-tag">{{ footer.tagline }}</div>
+    <div class="f-handle">{{ footer.handle }}</div>
   </div>
 
 </div>
