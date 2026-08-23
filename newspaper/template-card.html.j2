@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>오늘의 1면 경제신문</title>
+<style>
+  :root{
+    --navy:#14264f;
+    --navy-2:#1d3768;
+    --page:#e9f1fb;
+    --card:#ffffff;
+    --border:#d9e5f6;
+    --border-soft:#eef3fa;
+    --ink:#16233f;
+    --sub:#5d6b85;
+    --faint:#8a97ad;
+    --accent:#ff8a1f;
+    --accent-soft:#fff3e3;
+    --tint:#f2f7ff;
+    --up:#e0333f;
+    --down:#2f6fed;
+    --sans:'Apple SD Gothic Neo','Malgun Gothic','Noto Sans KR',sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    width:1080px;background:var(--page);
+    font-family:var(--sans);color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{width:1080px;padding:20px;background:var(--page);}
+  .sheet{
+    border-radius:28px;overflow:hidden;
+    background:var(--page);
+    border:1px solid #cfdff3;
+  }
+
+  /* ---------- 상단 밴드 ---------- */
+  .top-band{
+    position:relative;background:var(--navy);
+    padding:22px 26px 20px 190px;min-height:132px;
+    display:flex;flex-direction:column;justify-content:center;
+  }
+  .mascot{position:absolute;left:8px;bottom:0;width:178px;z-index:2;}
+  .mascot img{width:100%;height:auto;display:block;}
+  .top-kicker{
+    color:#fff;opacity:.72;font-size:12px;font-weight:800;letter-spacing:6px;
+    text-align:center;margin-bottom:8px;padding-right:180px;
+  }
+  .wordmark{
+    color:#fff;font-size:47px;font-weight:900;letter-spacing:-1.5px;
+    text-align:center;line-height:1.1;padding-right:180px;
+  }
+  .wordmark .hl{color:var(--accent);}
+  .cal-chip{
+    position:absolute;right:26px;top:26px;width:158px;
+    background:#fff;border-radius:14px;padding:14px 10px 12px;
+    text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.12);
+  }
+  .cal-chip::before{
+    content:"";position:absolute;left:0;right:0;top:0;height:9px;
+    background:var(--accent);border-radius:14px 14px 0 0;
+  }
+  .cal-chip .c-date{font-size:17px;font-weight:900;margin-top:4px;letter-spacing:-.5px;}
+  .cal-chip .c-day{font-size:16px;font-weight:900;color:var(--navy);margin-top:5px;}
+
+  /* ---------- 후크 ---------- */
+  .hook{
+    text-align:center;font-size:23px;font-weight:900;letter-spacing:-.5px;
+    padding:18px 26px 16px;
+  }
+  .hook .hl{color:var(--accent);}
+
+  .body{padding:0 22px 22px;display:flex;flex-direction:column;gap:16px;}
+  .row{display:flex;gap:16px;align-items:stretch;}
+
+  /* ---------- 카드 ---------- */
+  .card{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:20px;padding:18px 20px;min-width:0;
+  }
+  .pill{
+    display:inline-flex;align-items:center;gap:9px;
+    background:var(--navy);color:#fff;border-radius:999px;
+    padding:7px 16px 7px 8px;font-size:14.5px;font-weight:800;letter-spacing:-.3px;
+  }
+  .pill .pn{
+    background:#fff;color:var(--navy);border-radius:7px;
+    font-size:12px;font-weight:900;padding:2px 7px;letter-spacing:0;
+  }
+  .pill-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+  .pill-meta{font-size:12.5px;font-weight:700;color:var(--faint);}
+
+  /* 핵심 뉴스 */
+  .core-title{font-size:27px;font-weight:900;letter-spacing:-1px;line-height:1.3;margin:2px 0 14px;}
+  .num-list{list-style:none;margin:0;padding:0;}
+  .num-list li{
+    display:flex;gap:11px;padding:10px 0;
+    border-top:1px solid var(--border-soft);
+    font-size:14.5px;line-height:1.55;color:#2b3856;
+  }
+  .num-list li:first-child{border-top:none;}
+  .bn{
+    flex:none;background:var(--tint);border:1px solid var(--border);
+    color:var(--navy);border-radius:7px;
+    font-size:11px;font-weight:900;padding:2px 6px;height:20px;margin-top:1px;
+  }
+  .core-illo{display:block;width:100%;height:auto;border-radius:14px;margin-top:16px;}
+
+  /* Market Index */
+  .idx-row{
+    display:flex;align-items:center;gap:12px;
+    padding:11px 2px;border-top:1px solid var(--border-soft);
+  }
+  .idx-row:first-child{border-top:none;}
+  .ic{
+    flex:none;width:36px;height:36px;border-radius:11px;
+    background:var(--tint);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--navy);font-size:15px;font-weight:900;
+  }
+  .ic svg{width:19px;height:19px;stroke:var(--navy);fill:none;stroke-width:1.9;
+          stroke-linecap:round;stroke-linejoin:round;}
+  .idx-row .lbl{flex:1;min-width:0;font-size:14px;font-weight:700;color:#3a4762;}
+  .idx-row .val{font-size:21px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.6px;}
+  .idx-row .chg{
+    width:74px;text-align:right;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums;
+  }
+  .idx-row .chg.up{color:var(--up);}
+  .idx-row .chg.down{color:var(--down);}
+  .idx-src{
+    margin-top:12px;padding-top:11px;border-top:1px solid var(--border);
+    font-size:12px;font-weight:700;color:var(--faint);
+  }
+
+  /* 헤드라인 */
+  .headline{display:flex;gap:22px;align-items:stretch;}
+  .h-photo{
+    flex:0 0 43%;width:43%;align-self:stretch;min-height:300px;
+    border-radius:16px;background-size:cover;background-position:center;background-color:#e6ecf6;
+  }
+  .h-text{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;}
+  .h-title{font-size:34px;font-weight:900;letter-spacing:-1.5px;line-height:1.25;margin:0 0 14px;}
+  .h-sub{
+    font-size:15.5px;font-weight:800;color:var(--navy-2);line-height:1.55;
+    white-space:pre-line;margin-bottom:14px;
+  }
+  .h-body{font-size:14.5px;line-height:1.8;color:var(--sub);text-align:justify;}
+
+  /* 꼭 봐야 할 기사 */
+  .read-list{list-style:none;margin:0;padding:0;}
+  .read-list li{display:flex;gap:11px;padding:11px 0;border-top:1px solid var(--border-soft);}
+  .read-list li:first-child{border-top:none;padding-top:2px;}
+  .read-list .r-title{font-size:15.5px;font-weight:800;line-height:1.4;letter-spacing:-.4px;}
+  .read-list .r-sub{font-size:13px;color:var(--sub);line-height:1.45;margin-top:3px;}
+
+  .summary-box{
+    margin-top:14px;background:var(--tint);border:1px solid #d9e6fa;
+    border-radius:16px;padding:14px 16px;
+  }
+  .summary-box .s-head{
+    display:flex;align-items:center;gap:7px;
+    font-size:13.5px;font-weight:900;color:var(--navy);margin-bottom:8px;
+  }
+  .summary-box .s-head svg{width:15px;height:15px;stroke:var(--accent);fill:none;
+    stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .summary-box .s-text{font-size:14.5px;line-height:1.65;color:#2b3856;}
+  .summary-box .s-illo{display:block;width:64px;height:auto;margin:10px 0 0 auto;}
+
+  /* 보조 기사 */
+  .sub-stack{flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;}
+  .sub-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:11px;}
+  .sub-title{flex:1;min-width:0;font-size:19px;font-weight:900;letter-spacing:-.7px;line-height:1.32;}
+  .sub-body{font-size:13.5px;line-height:1.7;color:var(--sub);text-align:justify;}
+  .sub-thumb{
+    flex:none;width:148px;height:88px;border-radius:12px;
+    background-size:cover;background-position:center;background-color:#e6ecf6;
+  }
+
+  /* TIP */
+  .tip-steps{display:flex;gap:10px;}
+  .tip-step{flex:1;min-width:0;display:flex;gap:9px;align-items:flex-start;}
+  .tip-step .ti{
+    flex:none;width:32px;height:32px;border-radius:10px;
+    background:var(--tint);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .tip-step .ti svg{width:17px;height:17px;stroke:var(--navy);fill:none;
+    stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+  .tip-step .ts-label{font-size:13.5px;font-weight:900;letter-spacing:-.4px;}
+  .tip-step .ts-sub{font-size:11px;line-height:1.45;color:var(--sub);margin-top:3px;}
+
+  /* 꼬리말 */
+  .bottom-band{
+    background:var(--navy);padding:16px 28px;
+    display:flex;align-items:center;justify-content:space-between;
+    color:#fff;
+  }
+  .bottom-band .f-tag{font-size:16px;font-weight:900;letter-spacing:-.3px;}
+  .bottom-band .f-handle{font-size:14px;font-weight:800;opacity:.85;}
+</style>
+</head>
+<body>
+
+{% macro idx_icon(label) -%}
+  {%- if '코스피' in label -%}
+    <svg viewBox="0 0 24 24"><path d="M4 19V9M9.5 19V5M15 19v-7M20.5 19v-4"/></svg>
+  {%- elif '코스닥' in label -%}
+    <svg viewBox="0 0 24 24"><path d="M3 16l5-6 4 3.5L21 5"/><path d="M15 5h6v6"/></svg>
+  {%- elif '금리' in label or '채' in label -%}
+    <svg viewBox="0 0 24 24"><path d="M3 9l9-5 9 5"/><path d="M5 9v10M12 9v10M19 9v10M3 19h18"/></svg>
+  {%- elif '달러' in label -%}
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v10M14.5 9.4A2.6 2.6 0 0 0 12 8c-1.4 0-2.5.8-2.5 2s1.1 1.8 2.5 1.8 2.5.7 2.5 1.9S13.4 16 12 16a2.6 2.6 0 0 1-2.5-1.4"/></svg>
+  {%- elif '엔' in label -%}
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M8.5 8l3.5 4 3.5-4M12 12v5M9 13.2h6M9 15.4h6"/></svg>
+  {%- elif '유로' in label -%}
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M15.5 8.7A4 4 0 0 0 9 12a4 4 0 0 0 6.5 3.3M7.6 10.9h6M7.6 13.4h6"/></svg>
+  {%- else -%}
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v5l3 2"/></svg>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro tip_icon(i) -%}
+  {%- if i == 1 -%}
+    <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h6M7 12.5h6M7 16h4M16 9h1.5v4H16z"/></svg>
+  {%- elif i == 2 -%}
+    <svg viewBox="0 0 24 24"><path d="M4 10v4h3l5 3.5v-11L7 10H4z"/><path d="M16.5 9.5a4 4 0 0 1 0 5"/><path d="M18.8 7.5a7 7 0 0 1 0 9"/></svg>
+  {%- elif i == 3 -%}
+    <svg viewBox="0 0 24 24"><path d="M4 20V11M9.5 20V5M15 20v-6M20.5 20v-9"/></svg>
+  {%- elif i == 4 -%}
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M15.8 15.8L20 20"/></svg>
+  {%- else -%}
+    <svg viewBox="0 0 24 24"><path d="M16.5 3.9l3.6 3.6L9 18.6l-4.5.9.9-4.5z"/><path d="M14.3 6.1l3.6 3.6"/></svg>
+  {%- endif -%}
+{%- endmacro %}
+
+<div class="page">
+<div class="sheet">
+
+  <!-- 상단 밴드 -->
+  <div class="top-band">
+    {% if character_image %}
+    <div class="mascot"><img src="{{ character_image }}" alt=""></div>
+    {% endif %}
+    <div class="top-kicker">TODAY'S FRONT PAGE</div>
+    <div class="wordmark">오늘의 <span class="hl">1면</span> 경제신문</div>
+    <div class="cal-chip">
+      <div class="c-date">{{ date }}</div>
+      <div class="c-day">{{ day_label }}</div>
+    </div>
+  </div>
+
+  <div class="hook">{{ hook_html|safe if hook_html else hook_text }}</div>
+
+  <div class="body">
+
+    <!-- 핵심 뉴스 / Market Index -->
+    <div class="row">
+      <div class="card" style="flex:1.12;">
+        <div class="pill-row">
+          <div class="pill"><span class="pn">01</span>오늘의 핵심 뉴스</div>
+        </div>
+        <div class="core-title">{{ core_news.title }}</div>
+        <ul class="num-list">
+          {% for b in core_news.bullets %}
+          <li><span class="bn">{{ '%02d'|format(loop.index) }}</span><span>{{ b }}</span></li>
+          {% endfor %}
+        </ul>
+        {% if core_news.image %}
+        <img class="core-illo" src="{{ core_news.image }}" alt="">
+        {% endif %}
+      </div>
+
+      <div class="card" style="flex:.88;">
+        <div class="pill-row">
+          <div class="pill" style="padding-left:16px;">MARKET INDEX</div>
+          <div class="pill-meta">{{ market_index.date_label }} · {{ market_index.edition }}</div>
+        </div>
+        {% for row in market_index.rows %}
+        <div class="idx-row">
+          <div class="ic">{{ idx_icon(row.label) }}</div>
+          <div class="lbl">{{ row.label }}</div>
+          <div class="val">{{ row.value }}</div>
+          <div class="chg {{ row.direction }}">
+            {%- if row.change %}{{ '▲' if row.direction == 'up' else '▼' }} {{ row.change }}{% endif -%}
+          </div>
+        </div>
+        {% endfor %}
+        <div class="idx-src">{{ market_index.badge1 }} · {{ market_index.badge2 }}</div>
+      </div>
+    </div>
+
+    <!-- 헤드라인 -->
+    <div class="card headline">
+      {% if headline.image %}
+      <div class="h-photo" style="background-image:url('{{ headline.image }}');"></div>
+      {% endif %}
+      <div class="h-text">
+        <h1 class="h-title">{{ headline.title }}</h1>
+        <div class="h-sub">{{ headline.subtitle }}</div>
+        <div class="h-body">{{ headline.body }}</div>
+      </div>
+    </div>
+
+    <!-- 꼭 봐야 할 기사 + 한 줄 요약 / 보조 기사 -->
+    <div class="row">
+      <div class="card" style="flex:1;">
+        <div class="pill-row">
+          <div class="pill"><span class="pn">02</span>오늘 꼭 봐야 할 기사</div>
+        </div>
+        <ul class="read-list">
+          {% for a in must_read %}
+          <li>
+            <span class="bn">{{ '%02d'|format(loop.index) }}</span>
+            <div>
+              <div class="r-title">{{ a.title }}</div>
+              <div class="r-sub">{{ a.sub }}</div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        <div class="summary-box">
+          <div class="s-head">
+            <svg viewBox="0 0 24 24"><path d="M16.5 3.9l3.6 3.6L9 18.6l-4.5.9.9-4.5z"/><path d="M14.3 6.1l3.6 3.6"/></svg>
+            한 줄 요약
+          </div>
+          <div class="s-text">{{ summary }}</div>
+          {% if summary_image %}
+          <img class="s-illo" src="{{ summary_image }}" alt="">
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="sub-stack">
+        {% for s in sub_articles %}
+        <div class="card">
+          <div class="sub-head">
+            <div class="sub-title">{{ s.title }}</div>
+            {% if s.image %}
+            <div class="sub-thumb" style="background-image:url('{{ s.image }}');"></div>
+            {% endif %}
+          </div>
+          <div class="sub-body">{{ s.body }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- TIP -->
+    <div class="card">
+      <div class="pill-row">
+        <div class="pill"><span class="pn">03</span>신문 읽는 TIP</div>
+      </div>
+      <div class="tip-steps">
+        {% for step in tip_steps %}
+        <div class="tip-step">
+          <div class="ti">{{ tip_icon(loop.index) }}</div>
+          <div>
+            <div class="ts-label">{{ step.label }}</div>
+            <div class="ts-sub">{{ step.sub }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom-band">
+    <div class="f-tag">{{ footer.tagline }}</div>
+    <div class="f-handle">{{ footer.handle }}</div>
+  </div>
+
+</div>
+</div>
+</body>
+</html>
