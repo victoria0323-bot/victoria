@@ -59,6 +59,13 @@
   .head-char{width:250px;flex:none;margin-top:-16px;}
   .head-char img{width:100%;display:block;}
 
+  /* ---------- hero ---------- */
+  .hero{
+    background:#fff;border:1.5px solid var(--line);border-radius:16px;
+    padding:8px;margin-bottom:16px;overflow:hidden;
+  }
+  .hero img{width:100%;max-height:330px;object-fit:contain;display:block;}
+
   /* ---------- section ---------- */
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start;}
   .sec{background:var(--paper);border-radius:16px;overflow:hidden;border:1.5px solid var(--line);}
@@ -88,6 +95,10 @@
   ul.bul li b{color:var(--red);font-weight:800;}
 
   /* ---------- stake box ---------- */
+  .sec-img{text-align:center;margin-bottom:14px;}
+  .sec-img img{max-width:100%;max-height:215px;display:block;margin:0 auto;}
+  .mk-img{text-align:center;margin-bottom:6px;}
+  .mk-img img{max-height:120px;display:block;margin:0 auto;}
   .stake{background:#f6f8fc;border:1.5px solid var(--line);border-radius:13px;padding:14px 15px;}
   .stake-t{font-size:16px;font-weight:900;color:var(--navy);margin-bottom:11px;}
   .stake-rows{display:flex;gap:9px;}
@@ -107,7 +118,8 @@
     display:flex;gap:12px;align-items:flex-start;
     background:#f3faf6;border:1.5px solid #cfe6da;border-radius:13px;padding:13px 15px;
   }
-  .mini .ic{font-size:28px;line-height:1;flex:none;margin-top:2px;}
+  .mini .ic{font-size:28px;line-height:1;flex:none;margin-top:2px;width:58px;text-align:center;}
+  .mini .ic img{width:58px;height:58px;object-fit:contain;display:block;}
   .mini .tt{font-size:19px;font-weight:900;color:var(--green);margin-bottom:3px;letter-spacing:-0.5px;}
   .mini .bd{font-size:16.5px;line-height:1.45;color:#2f3a4d;font-weight:500;letter-spacing:-0.3px;}
 
@@ -127,7 +139,8 @@
     display:flex;gap:12px;align-items:flex-start;
     background:#f8f4fc;border:1.5px solid #ddcdec;border-radius:13px;padding:13px 15px;
   }
-  .rel-item .ic{font-size:26px;line-height:1;flex:none;margin-top:2px;}
+  .rel-item .ic{font-size:26px;line-height:1;flex:none;margin-top:2px;width:58px;text-align:center;}
+  .rel-item .ic img{width:58px;height:58px;object-fit:contain;display:block;}
   .rel-item .tt{font-size:19px;font-weight:900;color:var(--purple);margin-bottom:3px;letter-spacing:-0.6px;}
   .rel-item .bd{font-size:16.5px;line-height:1.45;color:#2f3a4d;font-weight:500;letter-spacing:-0.3px;}
   .rel-item .pg{font-size:14px;font-weight:800;color:var(--sub);margin-top:3px;}
@@ -140,6 +153,7 @@
   .col:last-child{border-right:none;}
   .col .lb{font-size:17px;font-weight:900;color:var(--navy);margin-bottom:7px;}
   .col .ic{font-size:30px;line-height:1;margin-bottom:7px;}
+  .col .ic img{width:66px;height:66px;object-fit:contain;margin:0 auto;display:block;}
   .col .tx{font-size:15.5px;line-height:1.4;color:#3a4557;font-weight:600;letter-spacing:-0.3px;}
 
   /* ---------- footer ---------- */
@@ -191,6 +205,10 @@
     </div>
   </div>
 
+  {% if hero_image %}
+  <div class="hero"><img src="{{ hero_image }}"></div>
+  {% endif %}
+
   <div class="grid">
     <div class="sec c-navy">
       <div class="sec-h"><span class="no">1</span><span class="t">{{ s1.title }}</span></div>
@@ -198,6 +216,7 @@
         <ul class="bul">
           {% for b in s1.bullets %}<li>{{ b|safe }}</li>{% endfor %}
         </ul>
+        {% if s1.image %}<div class="sec-img"><img src="{{ s1.image }}"></div>{% endif %}
         {% if s1.stake %}
         <div class="stake">
           <div class="stake-t">{{ s1.stake.title }}</div>
@@ -221,7 +240,7 @@
         <div class="minis">
           {% for m in s2.cards %}
           <div class="mini">
-            <div class="ic">{{ m.icon }}</div>
+            <div class="ic">{% if m.image %}<img src="{{ m.image }}">{% else %}{{ m.icon }}{% endif %}</div>
             <div>
               <div class="tt">{{ m.title }}</div>
               <div class="bd">{{ m.body }}</div>
@@ -237,6 +256,7 @@
     <div class="sec c-orange">
       <div class="sec-h"><span class="no">3</span><span class="t">{{ s3.title }}</span></div>
       <div class="sec-b">
+        {% if s3.image %}<div class="mk-img"><img src="{{ s3.image }}"></div>{% endif %}
         <div class="mk-cap">{{ s3.date_label }} 기준</div>
         <table class="mk">
           {% for r in s3.rows %}
@@ -258,7 +278,7 @@
         <div class="rel">
           {% for r in s4["links"] %}
           <div class="rel-item">
-            <div class="ic">{{ r.icon }}</div>
+            <div class="ic">{% if r.image %}<img src="{{ r.image }}">{% else %}{{ r.icon }}{% endif %}</div>
             <div>
               <div class="tt">{{ r.title }}</div>
               <div class="bd">{{ r.body }}</div>
@@ -277,7 +297,7 @@
       {% for c in s5.cols %}
       <div class="col">
         <div class="lb">{{ c.label }}</div>
-        <div class="ic">{{ c.icon }}</div>
+        <div class="ic">{% if c.image %}<img src="{{ c.image }}">{% else %}{{ c.icon }}{% endif %}</div>
         <div class="tx">{{ c.text }}</div>
       </div>
       {% endfor %}

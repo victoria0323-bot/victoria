@@ -45,8 +45,24 @@ def resolve_image(path: str) -> str:
     return f"data:{mime};base64,{encoded}"
 
 
+def resolve_images(node):
+    """중첩된 dict/list 안의 image 계열 필드를 모두 data URI로 바꾼다."""
+    if isinstance(node, dict):
+        return {k: (resolve_image(v) if k.endswith("image") and isinstance(v, str) else resolve_images(v))
+                for k, v in node.items()}
+    if isinstance(node, list):
+        return [resolve_images(v) for v in node]
+    return node
+
+
 def render_html(data: dict) -> str:
     data = dict(data)
+
+    if data.get("layout") == "frontpage":
+        data = resolve_images(data)
+        data["character_image"] = resolve_image(data.get("character_image", DEFAULT_CHARACTER_IMAGE))
+        env = Environment(loader=FileSystemLoader(str(ROOT)))
+        return env.get_template(TEMPLATES["frontpage"]).render(**data)
 
     for key in ("headline", "core_news", "ad"):
         if key in data:
