@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>오늘의 1면 경제신문</title>
+<style>
+  :root{
+    --navy:#1b3a6b;
+    --navy-deep:#12294d;
+    --green:#1c6b46;
+    --orange:#e2711d;
+    --purple:#5b2c83;
+    --red:#c0392b;
+    --blue:#2f6fed;
+    --ink:#1a1f2b;
+    --sub:#4a5568;
+    --line:#d7deea;
+    --paper:#ffffff;
+    --bg:#f4f6fb;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    width:1080px;
+    background:var(--bg);
+    font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    color:var(--ink);
+    word-break:keep-all;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{width:1080px;padding:26px 26px 22px;background:var(--bg);}
+
+  /* ---------- header ---------- */
+  .head{position:relative;margin-bottom:18px;}
+  .head-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+  .pill{
+    background:var(--navy-deep);color:#fff;font-weight:900;font-size:26px;
+    padding:11px 24px;border-radius:999px;letter-spacing:-0.5px;
+  }
+  .date-chip{
+    margin-left:auto;border:2.5px solid var(--red);border-radius:12px;
+    background:#fff;padding:9px 18px;text-align:center;line-height:1.25;
+  }
+  .date-chip .d{font-weight:900;font-size:21px;color:var(--red);}
+  .date-chip .n{font-weight:700;font-size:14px;color:var(--sub);}
+  .head-main{display:flex;gap:18px;align-items:flex-start;}
+  .head-text{flex:1;min-width:0;}
+  h1{
+    margin:2px 0 6px;font-size:47px;line-height:1.16;font-weight:900;text-wrap:balance;
+    color:var(--navy);letter-spacing:-2px;
+  }
+  .subtitle{font-size:25px;font-weight:900;color:var(--red);line-height:1.3;margin-bottom:14px;letter-spacing:-1px;}
+  .lede{
+    background:#eef3ff;border:1.5px solid #c3d3f5;border-radius:14px;
+    padding:14px 18px;font-size:19px;line-height:1.5;font-weight:500;color:#22314e;
+    display:flex;gap:10px;align-items:flex-start;
+  }
+  .lede .ic{font-size:22px;line-height:1.3;}
+  .head-char{width:250px;flex:none;margin-top:-16px;}
+  .head-char img{width:100%;display:block;}
+
+  /* ---------- section ---------- */
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start;}
+  .sec{background:var(--paper);border-radius:16px;overflow:hidden;border:1.5px solid var(--line);}
+  .sec-h{display:flex;align-items:center;gap:11px;padding:12px 18px;color:#fff;}
+  .sec-h .no{
+    width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.22);
+    border:2px solid #fff;display:flex;align-items:center;justify-content:center;
+    font-weight:900;font-size:17px;flex:none;
+  }
+  .sec-h .t{font-size:25px;font-weight:900;letter-spacing:-1px;}
+  .sec-b{padding:18px;}
+  .c-navy .sec-h{background:var(--navy);}
+  .c-green .sec-h{background:var(--green);}
+  .c-orange .sec-h{background:var(--orange);}
+  .c-purple .sec-h{background:var(--purple);}
+
+  /* ---------- bullets ---------- */
+  ul.bul{list-style:none;margin:0 0 14px;padding:0;}
+  ul.bul li{
+    position:relative;padding-left:26px;margin-bottom:9px;
+    font-size:18px;line-height:1.45;font-weight:500;color:#2a3346;letter-spacing:-0.4px;
+  }
+  ul.bul li:before{
+    content:"";position:absolute;left:8px;top:9px;width:8px;height:8px;
+    border-radius:50%;background:var(--navy);
+  }
+  ul.bul li b{color:var(--red);font-weight:800;}
+
+  /* ---------- stake box ---------- */
+  .stake{background:#f6f8fc;border:1.5px solid var(--line);border-radius:13px;padding:14px 15px;}
+  .stake-t{font-size:16px;font-weight:900;color:var(--navy);margin-bottom:11px;}
+  .stake-rows{display:flex;gap:9px;}
+  .stake-rows .cell{
+    flex:1;background:#fff;border:1.5px solid var(--line);border-radius:11px;
+    padding:11px 8px;text-align:center;
+  }
+  .cell .nm{font-size:15px;font-weight:700;color:var(--sub);margin-bottom:4px;}
+  .cell .pc{font-size:26px;font-weight:900;color:var(--navy);line-height:1;}
+  .cell.hi{background:#fff5f5;border-color:#f3b8b8;}
+  .cell.hi .pc{color:var(--red);}
+  .cell .note{font-size:13px;color:var(--sub);margin-top:4px;font-weight:600;}
+
+  /* ---------- mini cards ---------- */
+  .minis{display:flex;flex-direction:column;gap:11px;}
+  .mini{
+    display:flex;gap:12px;align-items:flex-start;
+    background:#f3faf6;border:1.5px solid #cfe6da;border-radius:13px;padding:13px 15px;
+  }
+  .mini .ic{font-size:28px;line-height:1;flex:none;margin-top:2px;}
+  .mini .tt{font-size:19px;font-weight:900;color:var(--green);margin-bottom:3px;letter-spacing:-0.5px;}
+  .mini .bd{font-size:16.5px;line-height:1.45;color:#2f3a4d;font-weight:500;letter-spacing:-0.3px;}
+
+  /* ---------- market ---------- */
+  .mk-cap{font-size:15px;font-weight:700;color:var(--sub);text-align:right;margin-bottom:8px;}
+  table.mk{width:100%;border-collapse:separate;border-spacing:0 7px;}
+  table.mk td{padding:9px 12px;background:#fdf6ee;border-top:1.5px solid #f0dcc4;border-bottom:1.5px solid #f0dcc4;}
+  table.mk td:first-child{border-left:1.5px solid #f0dcc4;border-radius:11px 0 0 11px;font-size:17.5px;font-weight:700;color:#3a4557;}
+  table.mk td.v{text-align:right;font-size:21px;font-weight:900;color:var(--ink);}
+  table.mk td:last-child{border-right:1.5px solid #f0dcc4;border-radius:0 11px 11px 0;text-align:right;font-size:17px;font-weight:800;width:150px;}
+  .up{color:#e0333f;}
+  .down{color:#2f6fed;}
+
+  /* ---------- related ---------- */
+  .rel{display:flex;flex-direction:column;gap:11px;}
+  .rel-item{
+    display:flex;gap:12px;align-items:flex-start;
+    background:#f8f4fc;border:1.5px solid #ddcdec;border-radius:13px;padding:13px 15px;
+  }
+  .rel-item .ic{font-size:26px;line-height:1;flex:none;margin-top:2px;}
+  .rel-item .tt{font-size:19px;font-weight:900;color:var(--purple);margin-bottom:3px;letter-spacing:-0.6px;}
+  .rel-item .bd{font-size:16.5px;line-height:1.45;color:#2f3a4d;font-weight:500;letter-spacing:-0.3px;}
+  .rel-item .pg{font-size:14px;font-weight:800;color:var(--sub);margin-top:3px;}
+
+  /* ---------- summary strip ---------- */
+  .strip{background:var(--paper);border-radius:16px;border:1.5px solid var(--line);overflow:hidden;margin-bottom:16px;}
+  .strip .sec-h{background:var(--navy-deep);}
+  .strip-b{display:grid;grid-template-columns:repeat(5,1fr);gap:0;padding:16px 10px;}
+  .col{padding:0 12px;text-align:center;border-right:1.5px dashed var(--line);}
+  .col:last-child{border-right:none;}
+  .col .lb{font-size:17px;font-weight:900;color:var(--navy);margin-bottom:7px;}
+  .col .ic{font-size:30px;line-height:1;margin-bottom:7px;}
+  .col .tx{font-size:15.5px;line-height:1.4;color:#3a4557;font-weight:600;letter-spacing:-0.3px;}
+
+  /* ---------- footer ---------- */
+  .foot{display:flex;gap:14px;align-items:stretch;position:relative;}
+  .tip{
+    flex:1;background:#fffaf0;border:1.5px solid #f2dfae;border-radius:15px;
+    padding:14px 18px;display:flex;gap:13px;align-items:center;
+  }
+  .tip .badge{
+    background:#ffd400;color:#5a4200;font-weight:900;font-size:19px;
+    border-radius:999px;padding:8px 16px;flex:none;
+  }
+  .tip .tx{font-size:17px;line-height:1.45;font-weight:600;color:#4a3b1a;letter-spacing:-0.3px;}
+  .concl{
+    flex:1.25;background:#fff5f5;border:1.5px solid #f3c0bb;border-radius:15px;padding:13px 18px;
+    padding-right:132px;
+  }
+  .concl .lb{
+    display:inline-block;background:var(--red);color:#fff;font-weight:900;font-size:15px;
+    padding:5px 13px;border-radius:999px;margin-bottom:7px;
+  }
+  .concl .tx{font-size:17.5px;line-height:1.45;font-weight:700;color:#3a2320;letter-spacing:-0.4px;}
+  .foot-char{position:absolute;right:-4px;bottom:-8px;width:132px;}
+  .foot-char img{width:100%;display:block;}
+
+  .credit{margin-top:14px;text-align:center;font-size:15px;font-weight:700;color:var(--sub);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="head">
+    <div class="head-top">
+      <div class="pill">{{ badge }}</div>
+      <div class="date-chip">
+        <div class="d">{{ date }}</div>
+        <div class="n">{{ day_label }}</div>
+      </div>
+    </div>
+    <div class="head-main">
+      <div class="head-text">
+        <h1>{{ title }}</h1>
+        <div class="subtitle">{{ subtitle }}</div>
+        <div class="lede"><span class="ic">💡</span><span>{{ lede }}</span></div>
+      </div>
+      {% if character_image %}
+      <div class="head-char"><img src="{{ character_image }}"></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="sec c-navy">
+      <div class="sec-h"><span class="no">1</span><span class="t">{{ s1.title }}</span></div>
+      <div class="sec-b">
+        <ul class="bul">
+          {% for b in s1.bullets %}<li>{{ b|safe }}</li>{% endfor %}
+        </ul>
+        {% if s1.stake %}
+        <div class="stake">
+          <div class="stake-t">{{ s1.stake.title }}</div>
+          <div class="stake-rows">
+            {% for c in s1.stake["cells"] %}
+            <div class="cell{% if c.highlight %} hi{% endif %}">
+              <div class="nm">{{ c.name }}</div>
+              <div class="pc">{{ c.value }}</div>
+              {% if c.note %}<div class="note">{{ c.note }}</div>{% endif %}
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="sec c-green">
+      <div class="sec-h"><span class="no">2</span><span class="t">{{ s2.title }}</span></div>
+      <div class="sec-b">
+        <div class="minis">
+          {% for m in s2.cards %}
+          <div class="mini">
+            <div class="ic">{{ m.icon }}</div>
+            <div>
+              <div class="tt">{{ m.title }}</div>
+              <div class="bd">{{ m.body }}</div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="sec c-orange">
+      <div class="sec-h"><span class="no">3</span><span class="t">{{ s3.title }}</span></div>
+      <div class="sec-b">
+        <div class="mk-cap">{{ s3.date_label }} 기준</div>
+        <table class="mk">
+          {% for r in s3.rows %}
+          <tr>
+            <td>{{ r.label }}</td>
+            <td class="v">{{ r.value }}</td>
+            <td class="{{ 'up' if r.direction == 'up' else 'down' }}">
+              {% if r.change %}{{ '▲' if r.direction == 'up' else '▼' }} {{ r.change }}{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+    </div>
+
+    <div class="sec c-purple">
+      <div class="sec-h"><span class="no">4</span><span class="t">{{ s4.title }}</span></div>
+      <div class="sec-b">
+        <div class="rel">
+          {% for r in s4["links"] %}
+          <div class="rel-item">
+            <div class="ic">{{ r.icon }}</div>
+            <div>
+              <div class="tt">{{ r.title }}</div>
+              <div class="bd">{{ r.body }}</div>
+              {% if r.page %}<div class="pg">{{ r.page }}</div>{% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="strip">
+    <div class="sec-h"><span class="no">5</span><span class="t">{{ s5.title }}</span></div>
+    <div class="strip-b">
+      {% for c in s5.cols %}
+      <div class="col">
+        <div class="lb">{{ c.label }}</div>
+        <div class="ic">{{ c.icon }}</div>
+        <div class="tx">{{ c.text }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="tip">
+      <div class="badge">TIP</div>
+      <div class="tx">{{ tip }}</div>
+    </div>
+    <div class="concl">
+      <div class="lb">오늘의 결론</div>
+      <div class="tx">{{ conclusion }}</div>
+      {% if character_image %}
+      <div class="foot-char"><img src="{{ character_image }}"></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="credit">{{ footer.tagline }} &nbsp;|&nbsp; {{ footer.handle }}</div>
+
+</div>
+</body>
+</html>

@@ -56,9 +56,39 @@
 | `sub_articles[].image` | 하단 보조기사 2개 각각의 배너 이미지 |
 | `character_image` | 지정 안 하면 `assets/character-woman-cat.png` 사용 |
 
+## 레이아웃 두 가지
+
+data JSON의 `layout` 값으로 템플릿이 갈린다.
+
+| layout | 템플릿 | 설명 |
+|---|---|---|
+| (생략) 또는 `daily` | `template.html.j2` | 기존 카드 레이아웃 |
+| `frontpage` | `template-frontpage.html.j2` | 1면 한 건을 ①~⑤ 섹션으로 풀어 쓴 인포그래픽 카드 (`data/2026-08-25.json` 참고) |
+
+`frontpage` 레이아웃의 주요 필드: `badge`, `date`, `day_label`, `title`, `subtitle`, `lede`,
+`s1`(무슨 일이야 - bullets + stake.cells), `s2`(왜 중요할까 - cards),
+`s3`(오늘의 지표 - rows), `s4`(함께 볼 기사 - links), `s5`(한눈에 정리 - cols),
+`tip`, `conclusion`, `footer`.
+`s1.bullets` 안에서는 `<b>강조</b>` 태그를 쓸 수 있다.
+
+## 한글 폰트
+
+컨테이너에 한글 폰트가 없으면 글자가 깨져 보인다. 렌더 전에 한 번 설치하면 된다.
+
+```bash
+UA="Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36"
+mkdir -p ~/.fonts
+for w in 400 700 900; do
+  url=$(curl -s "https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@$w" -H "User-Agent: $UA" | grep -o 'https://[^)]*')
+  curl -sL -o ~/.fonts/NotoSansKR-$w.ttf "$url"
+done
+fc-cache -f
+```
+
 ## 파일 구성
 
-- `template.html.j2` — Jinja2 HTML/CSS 템플릿 (디자인 전체)
+- `template.html.j2` — Jinja2 HTML/CSS 템플릿 (기본 카드 디자인)
+- `template-frontpage.html.j2` — 1면 인포그래픽 카드 템플릿 (`layout: "frontpage"`)
 - `render.py` — JSON 데이터를 템플릿에 채운 뒤 헤드리스 크롬으로 PNG 스크린샷 생성
 - `data/sample.json` — 예시 데이터 (첨부 이미지 내용 기반)
 - `assets/` — 고정 캐릭터 이미지 등 재사용 이미지 자산

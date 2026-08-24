@@ -22,6 +22,12 @@ ROOT = Path(__file__).parent
 CHROMIUM_PATH = "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"
 DEFAULT_CHARACTER_IMAGE = "assets/character-woman-cat.png"
 
+# data JSON 의 "layout" 값에 따라 사용할 템플릿을 고른다.
+TEMPLATES = {
+    "daily": "template.html.j2",
+    "frontpage": "template-frontpage.html.j2",
+}
+
 
 def resolve_image(path: str) -> str:
     """로컬 상대경로를 base64 data URI로 변환한다 (헤드리스 크롬의 file:// 접근 제한 회피)."""
@@ -55,7 +61,7 @@ def render_html(data: dict) -> str:
     data["character_image"] = resolve_image(data.get("character_image", DEFAULT_CHARACTER_IMAGE))
 
     env = Environment(loader=FileSystemLoader(str(ROOT)))
-    template = env.get_template("template.html.j2")
+    template = env.get_template(TEMPLATES.get(data.get("layout", "daily"), "template.html.j2"))
     return template.render(**data)
 
 
