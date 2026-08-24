@@ -2,25 +2,56 @@
   "layout": "headlines",
   "paper": "한국경제",
   "date": "2026.08.25 (화)",
-
-  "top_headline": "美 \"웨스팅하우스<br>지분 인수\" 韓에 제안",
+  "day_label": "DAY 035",
+  "top_headline": "美 \"웨스팅하우스 지분 인수\"<br>韓에 제안",
+  "top_sub": "한전, 공동 지분투자 검토 — 원전 '팀 코러스' 부상",
   "lead_image": "assets/2026-08-25-hero.png",
-
   "headlines": [
-    "근육 지키는 비만신약 … 한미약품 <em>3.2兆</em> 수출",
-    "2040년 노인 <em>60%</em>만 기초연금 받는다",
-    "무인택시 <em>19대</em>로 자율주행 강국 되겠다는 韓",
-    "초중고에 쓴 대학세 … 대학·평생교육에 투입",
-    "김민석·장동혁 첫 만남 \"與野, 대화 다리 놓자\""
+    {
+      "cat": "바이오",
+      "title": "근육 지키는 비만신약 … 한미약품 <em>3.2兆</em> 수출",
+      "image": "assets/2026-08-25-rel-1.png"
+    },
+    {
+      "cat": "복지",
+      "title": "2040년 노인 <em>60%</em>만 기초연금 받는다",
+      "image": "assets/2026-08-25-rel-2.png"
+    },
+    {
+      "cat": "모빌리티",
+      "title": "무인택시 <em>19대</em>로 자율주행 강국 되겠다는 韓",
+      "image": "assets/2026-08-25-rel-3.png"
+    },
+    {
+      "cat": "교육",
+      "title": "초중고에 쓴 대학세 … 대학·평생교육에 투입"
+    },
+    {
+      "cat": "정치",
+      "title": "김민석·장동혁 첫 만남 \"與野, 대화 다리 놓자\""
+    }
   ],
-
   "flow": "밖에선 원전·신약으로 몸값 올리고, 안에선 복지·규제를 손보는 하루",
-
   "market": [
-    {"label": "코스피", "value": "6,696.96", "change": "3.12%", "direction": "down"},
-    {"label": "환율", "value": "1,382.40", "change": "4.10", "direction": "down"}
+    {
+      "label": "코스피",
+      "value": "6,696.96",
+      "change": "3.12%",
+      "direction": "down"
+    },
+    {
+      "label": "코스닥",
+      "value": "813.33",
+      "change": "1.42%",
+      "direction": "up"
+    },
+    {
+      "label": "환율",
+      "value": "1,382.40",
+      "change": "4.10",
+      "direction": "down"
+    }
   ],
-
   "footer": {
     "tagline": "남편 몰래 성장 중 🔥",
     "handle": "@mom_victory0901"

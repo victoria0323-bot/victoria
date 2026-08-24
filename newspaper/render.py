@@ -46,6 +46,24 @@ def resolve_image(path: str) -> str:
     return f"data:{mime};base64,{encoded}"
 
 
+FONT_WEIGHTS = {"Thin": 100, "Light": 300, "Regular": 400, "Medium": 500,
+                "SemiBold": 600, "Bold": 700, "ExtraBold": 800, "Black": 900}
+
+
+def font_face_css() -> str:
+    """assets/fonts 의 웹폰트를 @font-face 블록으로 만들어 HTML 에 심는다."""
+    blocks = []
+    for f in sorted((ROOT / "assets" / "fonts").glob("*.woff2")):
+        family, _, style = f.stem.partition("-")
+        weight = FONT_WEIGHTS.get(style, 400)
+        uri = resolve_image(str(f))
+        blocks.append(
+            f"@font-face{{font-family:'{family}';font-style:normal;font-weight:{weight};"
+            f"src:url({uri}) format('woff2');}}"
+        )
+    return "\n".join(blocks)
+
+
 def resolve_images(node):
     """중첩된 dict/list 안의 image 계열 필드를 모두 data URI로 바꾼다."""
     if isinstance(node, dict):
@@ -62,6 +80,7 @@ def render_html(data: dict) -> str:
     if data.get("layout") in ("frontpage", "headlines"):
         data = resolve_images(data)
         data["character_image"] = resolve_image(data.get("character_image", DEFAULT_CHARACTER_IMAGE))
+        data["font_css"] = font_face_css()
         env = Environment(loader=FileSystemLoader(str(ROOT)))
         return env.get_template(TEMPLATES[data["layout"]]).render(**data)
 
