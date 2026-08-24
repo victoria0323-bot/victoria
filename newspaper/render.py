@@ -26,6 +26,7 @@ DEFAULT_CHARACTER_IMAGE = "assets/character-woman-cat.png"
 TEMPLATES = {
     "daily": "template.html.j2",
     "frontpage": "template-frontpage.html.j2",
+    "headlines": "template-headlines.html.j2",
 }
 
 
@@ -58,11 +59,11 @@ def resolve_images(node):
 def render_html(data: dict) -> str:
     data = dict(data)
 
-    if data.get("layout") == "frontpage":
+    if data.get("layout") in ("frontpage", "headlines"):
         data = resolve_images(data)
         data["character_image"] = resolve_image(data.get("character_image", DEFAULT_CHARACTER_IMAGE))
         env = Environment(loader=FileSystemLoader(str(ROOT)))
-        return env.get_template(TEMPLATES["frontpage"]).render(**data)
+        return env.get_template(TEMPLATES[data["layout"]]).render(**data)
 
     for key in ("headline", "core_news", "ad"):
         if key in data:
